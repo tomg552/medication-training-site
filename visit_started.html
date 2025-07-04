@@ -1,23 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Visit Started</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8"/>
+<title>Visit Started</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="styles.css" rel="stylesheet"/>
 </head>
-<body>
-  <div class="visit-card">
-    <h1 id="activity-name">📋 Medication –</h1>
-    <p><strong>Client:</strong> Hugo First</p>
-    <p><strong>Address:</strong> <span id="med-address">Loading...</span></p>
-    <p><strong>Visit Time:</strong> 08:00 – 08:30</p>
-    <p><strong>MAR Notes:</strong> Ensure correct technique is followed.</p>
-    <a id="form-link" class="start-button">Start Activity</a>
-  </div>
-
-  <script src="medicationMap.js"></script>
-  <script>
+<body><div class="navigation"><a class="nav-button back-button" onclick="history.back()">⬅ Back</a></div>
+<div class="visit-card">
+<h1 id="activity-name">📋 Medication –</h1>
+<p><strong>Client:</strong> Hugo First</p>
+<p><strong>Address:</strong> <span id="med-address">Loading...</span></p>
+<p><strong>Visit Time:</strong> 08:00 – 08:30</p>
+<p><strong>MAR Notes:</strong> Ensure correct technique is followed.</p>
+<a class="start-button" id="form-link">Start Activity</a>
+</div>
+<script src="medicationMap.js"></script>
+<script>
     document.addEventListener("DOMContentLoaded", function () {
       const params = new URLSearchParams(window.location.search);
       const medKey = params.get("med");
