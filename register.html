@@ -100,5 +100,26 @@
   document.body.classList.add(`${mode}-mode`);
   const container = document.querySelector(".register-container");
   if (container) container.classList.add(`${mode}-mode`);
-</script></body>
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("register-form");
+  if (!form) return;
+
+  form.addEventListener("submit", function (e) {
+    const assesseeInput = document.getElementById("assessee-name");
+    const assessorInput = document.getElementById("assessor-name");
+    const venueInput = document.getElementById("venue");
+
+    if (assesseeInput && assessorInput && venueInput) {
+      localStorage.setItem("assessee_name", assesseeInput.value);
+      localStorage.setItem("assessor_name", assessorInput.value);
+      localStorage.setItem("venue", venueInput.value);
+    } else {
+      console.warn("One or more register form fields not found.");
+    }
+  });
+});
+</script>
+</body>
 </html>
