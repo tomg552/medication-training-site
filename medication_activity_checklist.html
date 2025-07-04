@@ -177,14 +177,17 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     console.log("Form submitted attempt...");
 
-    const checkboxes = document.querySelectorAll(".check-item");
-    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-    console.log("All checkboxes checked?", allChecked);
+const checkboxes = document.querySelectorAll(".check-item");
+const visibleCheckboxes = Array.from(checkboxes).filter(cb => {
+  return cb.offsetParent !== null;
+});
 
-    if (!allChecked) {
-      alert("All checklist items must be completed before submitting.");
-      return;
-    }
+const allChecked = visibleCheckboxes.every(cb => cb.checked);
+
+if (!allChecked) {
+  alert("All checklist items must be completed before submitting.");
+  return;
+}
 
     const payload = {
       assessee_name: assessee,
