@@ -61,48 +61,59 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.querySelector("form");
+  const form = document.getElementById("checklist-form");
 
-  if (!form) return;
+  // Populate fields if needed
+  const assessee = localStorage.getItem("assessee_name") || "";
+  const assessor = localStorage.getItem("assessor_name") || "";
+  const venue = localStorage.getItem("venue") || "";
+  const medicationType = new URLSearchParams(window.location.search).get("utm_type") || "";
+
+  // Insert these into hidden fields or visible tags if needed
+  document.getElementById("assessee-name").value = assessee;
+  document.getElementById("assessor-name").value = assessor;
+  document.getElementById("venue").value = venue;
+  document.getElementById("medication-type").value = medicationType;
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const data = {};
-    const checkboxes = form.querySelectorAll("input[type='checkbox']");
-    const textInputs = form.querySelectorAll("input[type='text'], textarea");
+    const checkboxes = document.querySelectorAll(".check-item");
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
 
-    // Capture checkbox values
-    checkboxes.forEach(cb => {
-      data[cb.name || cb.id || cb.value] = cb.checked;
-    });
+    if (!allChecked) {
+      alert("All checklist items must be completed before submitting.");
+      return;
+    }
 
-    // Capture text input values (e.g. name, assessor, venue)
-    textInputs.forEach(input => {
-      data[input.name || input.id] = input.value;
-    });
+    const payload = {
+      assessee_name: assessee,
+      assessor_name: assessor,
+      venue: venue,
+      medication_type: medicationType,
+      checklist_complete: true
+    };
 
     try {
       const response = await fetch("https://routeshealthcare.app.n8n.cloud/webhook-test/meds-checklist-submit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
         window.location.href = "assessment_complete.html";
       } else {
-        alert("There was a problem submitting the form. Please try again.");
+        alert("Failed to submit checklist. Try again.");
       }
     } catch (err) {
-      console.error("Submission error:", err);
-      alert("Error submitting form. Please check your connection and try again.");
+      console.error(err);
+      alert("Submission failed. Check your connection.");
     }
   });
 });
 </script>
+
 
 </body>
 </html>
