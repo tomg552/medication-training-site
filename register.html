@@ -102,27 +102,36 @@
   if (container) container.classList.add(`${mode}-mode`);
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("regForm");
 
-  form.addEventListener("submit", function (e) {
+  if (!form) {
+    console.warn("regForm not found.");
+    return;
+  }
+
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const assessee = document.getElementById("userName").value;
-    const assessor = document.getElementById("assessorName").value;
-    const venue = document.getElementById("venue").value;
+    const assessee = document.getElementById("userName")?.value?.trim();
+    const assessor = document.getElementById("assessorName")?.value?.trim();
+    const venue = document.getElementById("venue")?.value?.trim();
+
+    if (!assessee || !venue) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
     localStorage.setItem("assessee_name", assessee);
-    localStorage.setItem("assessor_name", assessor);
+    localStorage.setItem("assessor_name", assessor || ""); // optional
     localStorage.setItem("venue", venue);
 
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get("mode") || "assessee";
-
-    window.location.href = `medication_types.html?mode=${mode}`;
+    // Navigate to menu.html
+    window.location.href = "menu.html";
   });
 });
 </script>
+
 
 </body>
 </html>
