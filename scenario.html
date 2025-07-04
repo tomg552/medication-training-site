@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Medication Scenario</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
+<meta charset="utf-8"/>
+<title>Medication Scenario</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="styles.css" rel="stylesheet"/>
+<style>
     body {
       font-family: Arial, sans-serif;
       padding: 2rem;
@@ -40,16 +41,15 @@
     }
   </style>
 </head>
-<body>
-  <div class="scenario-container">
-    <h1 id="scenario-title">Loading...</h1>
-    <p id="scenario-text">Please wait while the scenario loads.</p>
-    <button id="start-assessment">Begin Assessment</button>
-  </div>
-
-  <script src="medicationMap.js"></script>
-  <script src="medicationScenarios.js"></script>
-  <script>
+<body><div class="navigation"><a class="nav-button back-button" onclick="history.back()">⬅ Back</a></div>
+<div class="scenario-container">
+<h1 id="scenario-title">Loading...</h1>
+<p id="scenario-text">Please wait while the scenario loads.</p>
+<button id="start-assessment">Begin Assessment</button>
+</div>
+<script src="medicationMap.js"></script>
+<script src="medicationScenarios.js"></script>
+<script>
     document.addEventListener("DOMContentLoaded", function () {
       if (typeof medicationMap === "undefined" || typeof medicationScenarios === "undefined") {
         alert("Scenario data not available. Please try again later.");
