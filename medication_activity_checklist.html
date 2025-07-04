@@ -112,21 +112,24 @@
     "nose-drops": ["section-details", "medicines", "administration", "nose-drops", "signoff"]
   };
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get("utm_type");
+document.addEventListener("DOMContentLoaded", function () {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get("utm_type");
 
-    if (type && sectionMap[type]) {
-      const visibleSections = sectionMap[type];
-      document.querySelectorAll("fieldset").forEach(fs => {
-        if (visibleSections.includes(fs.id)) {
-          fs.style.display = "";
-        } else {
-          fs.style.display = "none";
-        }
-      });
-    }
-  });
+  if (type && sectionMap[type]) {
+    const visibleSections = sectionMap[type];
+    document.querySelectorAll("fieldset").forEach(fs => {
+      if (visibleSections.includes(fs.id)) {
+        fs.style.display = "";
+        fs.querySelectorAll("input[type='checkbox']").forEach(cb => cb.required = true);
+      } else {
+        fs.style.display = "none";
+        fs.querySelectorAll("input[type='checkbox']").forEach(cb => cb.required = false);
+      }
+    });
+  }
+});
+
 </script><script>
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
