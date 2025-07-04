@@ -58,5 +58,51 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.querySelector(".container") || document.querySelector("form");
     if (container) container.classList.add(`${mode}-mode`);
   });
-</script></body>
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("form");
+
+  if (!form) return;
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const data = {};
+    const checkboxes = form.querySelectorAll("input[type='checkbox']");
+    const textInputs = form.querySelectorAll("input[type='text'], textarea");
+
+    // Capture checkbox values
+    checkboxes.forEach(cb => {
+      data[cb.name || cb.id || cb.value] = cb.checked;
+    });
+
+    // Capture text input values (e.g. name, assessor, venue)
+    textInputs.forEach(input => {
+      data[input.name || input.id] = input.value;
+    });
+
+    try {
+      const response = await fetch("https://routeshealthcare.app.n8n.cloud/webhook-test/meds-checklist-submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        window.location.href = "assessment_complete.html";
+      } else {
+        alert("There was a problem submitting the form. Please try again.");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("Error submitting form. Please check your connection and try again.");
+    }
+  });
+});
+</script>
+
+</body>
 </html>
