@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Visit Started</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="visit-card">
+    <h1 id="activity-name">📋 Medication –</h1>
+    <p><strong>Client:</strong> Hugo First</p>
+    <p><strong>Address:</strong> <span id="med-address">Loading...</span></p>
+    <p><strong>Visit Time:</strong> 08:00 – 08:30</p>
+    <p><strong>MAR Notes:</strong> Ensure correct technique is followed.</p>
+    <a id="form-link" class="start-button">Start Activity</a>
+  </div>
+
+  <script src="medicationMap.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      const medKey = params.get("med");
+      const mode = params.get("mode") || "assessee";
+
+      if (!medKey || !medicationMap[medKey]) {
+        document.getElementById("activity-name").textContent = "📋 Medication – Unknown";
+        return;
+      }
+
+      const med = medicationMap[medKey];
+
+      document.body.classList.add(`${mode}-mode`);
+      const card = document.querySelector(".visit-card");
+      if (card) card.classList.add(`${mode}-mode`);
+
+      document.getElementById("activity-name").textContent = "📋 Medication – " + med.name;
+      document.getElementById("med-address").textContent = med.address;
+
+      // Always go to scenario.html regardless of mode
+      const formLink = document.getElementById("form-link");
+      formLink.href = `scenario.html?utm_type=${med.type}&med=${medKey}&mode=${mode}`;
+    });
+  </script>
+</body>
+</html>

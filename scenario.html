@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Medication Scenario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    .scenario-container {
+      background: white;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      border: none;
+      background-color: #0078d4;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005a9e;
+    }
+  </style>
+</head>
+<body>
+  <div class="scenario-container">
+    <h1 id="scenario-title">Loading...</h1>
+    <p id="scenario-text">Please wait while the scenario loads.</p>
+    <button id="start-assessment">Begin Assessment</button>
+  </div>
+
+  <script src="medicationMap.js"></script>
+  <script src="medicationScenarios.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (typeof medicationMap === "undefined" || typeof medicationScenarios === "undefined") {
+        alert("Scenario data not available. Please try again later.");
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const medKey = params.get("med");
+      const utmType = params.get("utm_type");
+      const mode = params.get("mode") || "assessee";
+
+      document.body.classList.add(`${mode}-mode`);
+      const container = document.querySelector(".scenario-container");
+      if (container) container.classList.add(`${mode}-mode`);
+
+      const med = medicationMap[medKey];
+      const scenario = med ? medicationScenarios[med.type] : null;
+
+      if (scenario) {
+        document.getElementById("scenario-title").textContent = scenario.title;
+        document.getElementById("scenario-text").textContent = scenario.text;
+      } else {
+        document.getElementById("scenario-title").textContent = "Medication Scenario";
+        document.getElementById("scenario-text").textContent = "No scenario defined for this medication yet.";
+      }
+
+      document.getElementById("start-assessment").onclick = function () {
+        window.location.href = `medication_activity_checklist.html?utm_type=${utmType}&med=${medKey}&mode=${mode}`;
+      };
+    });
+  </script>
+</body>
+</html>

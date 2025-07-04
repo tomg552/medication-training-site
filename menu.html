@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Select Medication Type</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="styles.css" rel="stylesheet"/>
+<style>
+    body {
+      background: #f5f9fc;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    .menu-container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .user-info {
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+    .group {
+      margin-bottom: 1rem;
+      border-left: 4px solid #0078d4;
+      padding-left: 1rem;
+    }
+    .group h2 {
+      margin-bottom: 0.5rem;
+    }
+    .medication-link {
+      display: block;
+      margin: 0.25rem 0;
+      text-decoration: none;
+      color: #0078d4;
+      font-weight: bold;
+    }
+    .medication-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="menu-container">
+<h1>Choose a Medication Activity</h1>
+<div class="user-info" id="userDetails"></div>
+<div class="group">
+<h2>Inhalers</h2>
+<a class="medication-link" href="#" onclick="goToNext('fostair')">Fostair 100/6 Inhaler</a>
+</div>
+<div class="group">
+<h2>Transdermal Patches</h2>
+<a class="medication-link" href="#" onclick="goToNext('buprenorphine')">Buprenorphine Patch</a>
+</div>
+<div class="group">
+<h2>Tablets</h2>
+<a class="medication-link" href="#" onclick="goToNext('cocodamol')">Co-codamol 8/500</a>
+</div>
+<div class="group">
+<h2>Creams</h2>
+<a class="medication-link" href="#" onclick="goToNext('hydrocortisone')">Hydrocortisone 1% Cream</a>
+</div>
+<div class="group">
+<h2>Eye Drops</h2>
+<a class="medication-link" href="#" onclick="goToNext('latanoprost')">Latanoprost Eye Drops</a>
+</div>
+<div class="group">
+<h2>Ear Drops</h2>
+<a class="medication-link" href="#" onclick="goToNext('sofradex')">Sofradex Ear Drops</a>
+</div>
+<div class="group">
+<h2>Liquids</h2>
+<a class="medication-link" href="#" onclick="goToNext('oromorph')">Oromorph Liquid</a>
+</div>
+</div>
+<script>
+    const mode = sessionStorage.getItem("mode") || "assessor";
+    const userName = sessionStorage.getItem("userName") || "";
+    const venue = sessionStorage.getItem("venue") || "";
+    const assessorName = sessionStorage.getItem("assessorName") || "";
+
+    const infoBlock = document.getElementById("userDetails");
+    if (mode === "assessee") {
+      infoBlock.innerHTML = `<strong>Assessee:</strong> ${userName}<br><strong>Assessor:</strong> ${assessorName}<br><strong>Venue:</strong> ${venue}`;
+    } else {
+      infoBlock.innerHTML = `<strong>Assessor:</strong> ${userName}<br><strong>Venue:</strong> ${venue}`;
+    }
+
+    function goToNext(medKey) {
+      if (mode === "assessee") {
+        window.location.href = `visit_not_started.html?med=${medKey}&mode=assessee`;
+      } else {
+        // Load medicationMap to get utm_type
+        const med = {
+          fostair: "inhalers",
+          buprenorphine: "patches",
+          cocodamol: "tablets",
+          hydrocortisone: "creams",
+          latanoprost: "eye-drops",
+          sofradex: "ear-drops",
+          oromorph: "liquids"
+        }[medKey];
+        window.location.href = `medication_competency_form_styled.html?utm_type=${med}&med=${medKey}&mode=assessor`;
+      }
+    }
+  </script>
+<script>
+  const mode = sessionStorage.getItem("mode") || "assessee";
+  document.body.classList.add(`${mode}-mode`);
+  const container = document.querySelector(".menu-container");
+  if (container) container.classList.add(`${mode}-mode`);
+</script></body>
+</html>
