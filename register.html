@@ -103,23 +103,26 @@
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("register-form");
-  if (!form) return;
+  const form = document.getElementById("regForm");
 
   form.addEventListener("submit", function (e) {
-    const assesseeInput = document.getElementById("assessee-name");
-    const assessorInput = document.getElementById("assessor-name");
-    const venueInput = document.getElementById("venue");
+    e.preventDefault();
 
-    if (assesseeInput && assessorInput && venueInput) {
-      localStorage.setItem("assessee_name", assesseeInput.value);
-      localStorage.setItem("assessor_name", assessorInput.value);
-      localStorage.setItem("venue", venueInput.value);
-    } else {
-      console.warn("One or more register form fields not found.");
-    }
+    const assessee = document.getElementById("userName").value;
+    const assessor = document.getElementById("assessorName").value;
+    const venue = document.getElementById("venue").value;
+
+    localStorage.setItem("assessee_name", assessee);
+    localStorage.setItem("assessor_name", assessor);
+    localStorage.setItem("venue", venue);
+
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode") || "assessee";
+
+    window.location.href = `medication_types.html?mode=${mode}`;
   });
 });
 </script>
+
 </body>
 </html>
