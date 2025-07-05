@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Register for Medication Training</title>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="styles.css" rel="stylesheet"/>
-<style>
+  <meta charset="utf-8"/>
+  <title>Register for Medication Training</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <link href="styles.css" rel="stylesheet"/>
+  <style>
     body {
       background: #eef3f8;
       font-family: Arial, sans-serif;
@@ -58,81 +57,54 @@
 </head>
 <body>
 <div class="register-container">
-<h1 id="form-title">Register</h1>
-<form id="regForm">
-<label for="userName">Your Name</label>
-<input id="userName" required="" type="text"/>
-<div id="assessorNameContainer">
-<label for="assessorName">Assessor's Name</label>
-<input id="assessorName" type="text"/>
+  <h1 id="form-title">Register</h1>
+  <form id="regForm">
+    <label for="userName">Your Name</label>
+    <input id="userName" required="" type="text"/>
+    <div id="assessorNameContainer">
+      <label for="assessorName">Assessor's Name</label>
+      <input id="assessorName" type="text"/>
+    </div>
+    <label for="venue">Venue</label>
+    <input id="venue" required="" type="text"/>
+    <button class="next-btn" type="submit">Continue</button>
+  </form>
 </div>
-<label for="venue">Venue</label>
-<input id="venue" required="" type="text"/>
-<button class="next-btn" type="submit">Continue</button>
-</form>
-</div>
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get("mode") || "assessee";
-    document.getElementById("form-title").textContent = mode === "assessor" ? "Assessor Registration" : "Assessee Registration";
-
-    // Show or hide the assessor field depending on the mode
-    if (mode === "assessor") {
-      document.getElementById("assessorNameContainer").style.display = "none";
-    }
-
-    document.getElementById("regForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const userName = document.getElementById("userName").value;
-      const venue = document.getElementById("venue").value;
-      const assessorName = mode === "assessee" ? document.getElementById("assessorName").value : "";
-
-      sessionStorage.setItem("mode", mode);
-      sessionStorage.setItem("userName", userName);
-      sessionStorage.setItem("venue", venue);
-      sessionStorage.setItem("assessorName", assessorName);
-
-      window.location.href = "/medication-training-site/menu.html?mode=" + mode;
-    });
-  </script>
-<script>
-  const mode = new URLSearchParams(window.location.search).get("mode") || "assessee";
-  document.body.classList.add(`${mode}-mode`);
-  const container = document.querySelector(".register-container");
-  if (container) container.classList.add(`${mode}-mode`);
-</script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("regForm");
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode") || "assessee";
 
-  if (!form) {
-    console.warn("regForm not found.");
-    return;
+  document.getElementById("form-title").textContent = mode === "assessor"
+    ? "Assessor Registration"
+    : "Assessee Registration";
+
+  if (mode === "assessor") {
+    document.getElementById("assessorNameContainer").style.display = "none";
   }
+
+  const form = document.getElementById("regForm");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const assessee = document.getElementById("userName")?.value?.trim();
-    const assessor = document.getElementById("assessorName")?.value?.trim();
-    const venue = document.getElementById("venue")?.value?.trim();
+    const userName = document.getElementById("userName").value.trim();
+    const assessorName = mode === "assessee" ? document.getElementById("assessorName").value.trim() : "";
+    const venue = document.getElementById("venue").value.trim();
 
-    if (!assessee || !venue) {
+    if (!userName || !venue) {
       alert("Please fill in all required fields.");
       return;
     }
 
-    localStorage.setItem("assessee_name", assessee);
-    localStorage.setItem("assessor_name", assessor || ""); // optional
+    localStorage.setItem("assessee_name", userName);
+    localStorage.setItem("assessor_name", assessorName);
     localStorage.setItem("venue", venue);
+    localStorage.setItem("mode", mode);
 
-    // Navigate to menu.html
-    window.location.href = "/medication-training-site/medication_types.html?mode=assessee";
-
+    window.location.href = "/medication-training-site/menu.html?mode=" + mode;
   });
 });
 </script>
-
-
 </body>
 </html>
