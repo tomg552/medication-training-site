@@ -212,7 +212,7 @@ if (!allChecked) {
         localStorage.setItem("venue", venue);
         localStorage.setItem("assessment_date", new Date().toISOString().split("T")[0]); // e.g. "2025-07-04"
         console.log("Submission successful.");
-        window.location.href = "assessment_complete.html";
+        window.location.href = "/medication-training-site/assessment_complete.html";
       } else {
         alert("Failed to submit checklist. Try again.");
       }
