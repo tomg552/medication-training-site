@@ -97,7 +97,7 @@
 
     function goToNext(medKey) {
       if (mode === "assessee") {
-        window.location.href = `visit_not_started.html?med=${medKey}&mode=assessee`;
+        window.location.href = `/medication-training-site/visit_not_started.html?med=${medKey}&mode=assessee`;
       } else {
         // Load medicationMap to get utm_type
         const med = {
@@ -109,7 +109,7 @@
           sofradex: "ear-drops",
           oromorph: "liquids"
         }[medKey];
-        window.location.href = `medication_competency_form_styled.html?utm_type=${med}&med=${medKey}&mode=assessor`;
+        window.location.href = `/medication-training-site/medication_competency_form_styled.html?utm_type=${med}&med=${medKey}&mode=assessor`;
       }
     }
   </script>
