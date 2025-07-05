@@ -207,6 +207,10 @@ if (!allChecked) {
       });
 
       if (response.ok) {
+        localStorage.setItem("assessee_name", assessee);
+        localStorage.setItem("assessor_name", assessor);
+        localStorage.setItem("venue", venue);
+        localStorage.setItem("assessment_date", new Date().toISOString().split("T")[0]); // e.g. "2025-07-04"
         console.log("Submission successful.");
         window.location.href = "assessment_complete.html";
       } else {
