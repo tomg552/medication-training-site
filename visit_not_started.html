@@ -55,7 +55,7 @@
 <div class="details"><strong>🔁</strong><span>Previous &amp; Later Shifts</span></div>
 <div class="details"><strong>📝</strong><span>Add Shift Note</span></div>
 <div class="button-container">
-<a href="fostair_visit_started.html"><button class="start-btn">Start Shift</button></a>
+<a href="/medication-training-site/visit_started.html"><button class="start-btn">Start Shift</button></a>
 </div>
 </div>
 <script src="medicationMap.js"></script>
@@ -67,7 +67,7 @@
 
     if (med) {
       const formLink = document.querySelector("a[href*='visit_started.html']");
-      if (formLink) formLink.href = `visit_started.html?med=${medKey}`;
+      if (formLink) formLink.href = `/medication-training-site/visit_started.html?med=${medKey}`;
     }
   });
 </script>
