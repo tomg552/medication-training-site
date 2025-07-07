@@ -11,7 +11,8 @@
     <div class="header">Assessor Competency Menu</div>
     <div class="details"><strong>👤 Assessor:</strong> <span id="assessor_name"></span></div>
     <div class="details"><strong>📍 Venue:</strong> <span id="venue"></span></div>
-    <div class="details"><strong>📅 Date:</strong> <span id=new Date().toLocaleDateString("en-GB")></span></div>
+    <div class="details"><strong>📅 Date:</strong> <span id="assessment_date"></span></div>
+
     <div class="details">
       <label for="medicationType"><strong>💊 Choose Medication Type:</strong></label>
       <select id="medicationType">
@@ -23,21 +24,29 @@
         <option value="patches">Transdermal Patches</option>
       </select>
     </div>
+
     <div style="text-align: center; margin-top: 1.5rem;">
       <button onclick="goToForm()">Start Assessment</button>
     </div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById("assessorName").textContent = params.get("assessor") || "Unknown";
-    document.getElementById("venueName").textContent = params.get("venue") || "Unknown";
-    document.getElementById("assessmentDate").textContent = params.get("date") || "Unknown";
+    document.addEventListener("DOMContentLoaded", () => {
+      const assessor = localStorage.getItem("assessor_name") || "[Not set]";
+      const venue = localStorage.getItem("venue") || "[Not set]";
+      const date = new Date().toLocaleDateString("en-GB");
+
+      document.getElementById("assessor_name").textContent = assessor;
+      document.getElementById("venue").textContent = venue;
+      document.getElementById("assessment_date").textContent = date;
+    });
 
     function goToForm() {
       const utm_type = document.getElementById("medicationType").value;
-      params.set("utm_type", utm_type);
-      window.location.href = "medication_competency_form_assessor_ready.html?" + params.toString();
+      const url = new URL("medication_competency_form_assessor_ready.html", window.location.origin);
+
+      url.searchParams.set("utm_type", utm_type);
+      window.location.href = url.toString();
     }
   </script>
 </body>
