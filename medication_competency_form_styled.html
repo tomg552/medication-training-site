@@ -8,7 +8,7 @@
 </head>
 <body style="background: #f0f4f8; font-family: Arial, sans-serif;"><p id="current-date" style="text-align: right; font-size: 0.9rem; color: #444; margin-bottom: 0.5rem;">Date: 04/07/2025</p><h2 id="medication-type-heading" style="color: #0078d4; text-align: center; margin-bottom: 0.5rem;">Loading medication type...</h2><div class="visit-card">
 <form>
-<fieldset id="section-details"><legend>Section 1: Details</legend><table style="width: 100%; border-collapse: collapse;"><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Name of Assessee</td><td style="padding: 0.5rem;"><input id="assessee" name="assessee" style="width: 100%; padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;" type="text"/></td></tr><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Name of Assessor</td><td style="padding: 0.5rem;"><input id="assessor" name="assessor" style="width: 100%; padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;" type="text"/></td></tr><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Venue</td><td style="padding: 0.5rem;"><input id="venue" name="venue" style="width: 100%; padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;" type="text"/></td></tr><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Date</td><td style="padding: 0.5rem;">04/07/2025</td></tr></table></fieldset>
+<fieldset id="section-details"><legend>Section 1: Details</legend><table style="width: 100%; border-collapse: collapse;"><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Name of Assessee</td><td style="padding: 0.5rem;"><input id="assessee_name" name="assessee" style="width: 100%; padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;" type="text"/></td></tr><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Name of Assessor</td><td style="padding: 0.5rem;"><input id="assessor" name="assessor" style="width: 100%; padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;" type="text"/></td></tr><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Venue</td><td style="padding: 0.5rem;"><input id="venue" name="venue" style="width: 100%; padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;" type="text"/></td></tr><tr><td style="padding: 0.5rem; font-weight: bold; width: 30%;">Date</td><td style="padding: 0.5rem;">04/07/2025</td></tr></table></fieldset>
 <fieldset id="medicines">
 <legend>
      Section 1 – Support with Medicines
@@ -2698,21 +2698,26 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const fields = [
-      { id: "assessee", key: "assessee" },
-      { id: "assessor", key: "assessor_name" },
-      { id: "venue", key: "venue" }
-    ];
+    const assesseeInput = document.getElementById("assessee_name");
+    const storedAssessee = localStorage.getItem("assessee_name");
+    if (storedAssessee && assesseeInput) {
+      assesseeInput.value = storedAssessee;
+    }
 
-    fields.forEach(({ id, key }) => {
-      const input = document.getElementById(id);
-      const storedValue = localStorage.getItem(key);
-      if (storedValue && input) {
-        input.value = storedValue;
-      }
-    });
+    const assessorInput = document.getElementById("assessor_name");
+    const storedAssessor = localStorage.getItem("assessor_name");
+    if (storedAssessor && assessorInput) {
+      assessorInput.value = storedAssessor;
+    }
+
+    const venueInput = document.getElementById("venue");
+    const storedVenue = localStorage.getItem("venue");
+    if (storedVenue && venueInput) {
+      venueInput.value = storedVenue;
+    }
   });
 </script>
+
 
 </body>
 </html>
