@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assessor Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="visit-card">
+    <div class="header">Assessor Competency Menu</div>
+    <div class="details"><strong>👤 Assessor:</strong> <span id="assessorName"></span></div>
+    <div class="details"><strong>📍 Venue:</strong> <span id="venueName"></span></div>
+    <div class="details"><strong>📅 Date:</strong> <span id="assessmentDate"></span></div>
+    <div class="details">
+      <label for="medicationType"><strong>💊 Choose Medication Type:</strong></label>
+      <select id="medicationType">
+        <option value="tablets">Tablets</option>
+        <option value="liquids">Liquids</option>
+        <option value="creams">Creams</option>
+        <option value="eye-drops">Eye Drops</option>
+        <option value="inhalers">Inhalers</option>
+        <option value="patches">Transdermal Patches</option>
+      </select>
+    </div>
+    <div style="text-align: center; margin-top: 1.5rem;">
+      <button onclick="goToForm()">Start Assessment</button>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("assessorName").textContent = params.get("assessor") || "Unknown";
+    document.getElementById("venueName").textContent = params.get("venue") || "Unknown";
+    document.getElementById("assessmentDate").textContent = params.get("date") || "Unknown";
+
+    function goToForm() {
+      const utm_type = document.getElementById("medicationType").value;
+      params.set("utm_type", utm_type);
+      window.location.href = "medication_competency_form_assessor_ready.html?" + params.toString();
+    }
+  </script>
+</body>
+</html>
