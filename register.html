@@ -60,27 +60,31 @@
   <h1 id="form-title">Register</h1>
   <form id="regForm">
     <label for="userName">Your Name</label>
-    <input id="userName" required="" type="text"/>
+    <input id="userName" required type="text"/>
+    
     <div id="assessorNameContainer">
       <label for="assessorName">Assessor's Name</label>
       <input id="assessorName" type="text"/>
     </div>
+    
     <label for="venue">Venue</label>
-    <input id="venue" required="" type="text"/>
+    <input id="venue" required type="text"/>
+    
     <button class="next-btn" type="submit">Continue</button>
   </form>
 </div>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") || "assessee";
 
-  document.getElementById("form-title").textContent = mode === "assessor"
-    ? "Assessor Registration"
-    : "Assessee Registration";
+  document.getElementById("form-title").textContent =
+    mode === "assessor" ? "Assessor Registration" : "Assessee Registration";
 
   if (mode === "assessor") {
     document.getElementById("assessorNameContainer").style.display = "none";
+    document.getElementById("assessorName").value = "";
   }
 
   const form = document.getElementById("regForm");
@@ -89,31 +93,30 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const userName = document.getElementById("userName").value.trim();
-    const assessorName = mode === "assessee" ? document.getElementById("assessorName").value.trim() : "";
+    const assessorNameInput = document.getElementById("assessorName").value.trim();
     const venue = document.getElementById("venue").value.trim();
 
     if (!userName || !venue) {
       alert("Please fill in all required fields.");
       return;
-
-    if (userType === "assessor") {
-      const params = new URLSearchParams({
-        assessor: assessorName,
-        venue: venueName,
-        date: selectedDate,
-        utm_type: medicationType
-      });
-  window.location.href = "assessor_menu.html?" + params.toString();
-}
-
     }
 
-    localStorage.setItem("assessee_name", userName);
-    localStorage.setItem("assessor_name", assessorName);
+    if (mode === "assessor") {
+      localStorage.setItem("assessor_name", userName);     // Assessor inputs their own name
+      localStorage.setItem("assessee_name", "");           // Will be typed later on form
+    } else {
+      localStorage.setItem("assessee_name", userName);     // Assessee inputs their name
+      localStorage.setItem("assessor_name", assessorNameInput); // Assessor name input manually
+    }
+
     localStorage.setItem("venue", venue);
     localStorage.setItem("mode", mode);
 
-    window.location.href = "/medication-training-site/menu.html?mode=" + mode;
+    const nextPage = mode === "assessor"
+      ? "assessor_menu.html"
+      : "visit_not_started.html";
+
+    window.location.href = `/medication-training-site/${nextPage}`;
   });
 });
 </script>
