@@ -43,7 +43,7 @@
 
     function goToForm() {
       const utm_type = document.getElementById("medicationType").value;
-      const url = new URL("medication_competency_form_styled.html", window.location.origin);
+      const url = new URL("medication-training-site/medication_competency_form_styled.html", window.location.origin);
 
       url.searchParams.set("utm_type", utm_type);
       window.location.href = url.toString();
