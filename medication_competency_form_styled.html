@@ -2695,5 +2695,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (header) header.textContent = `Medication Type: ${formatted}`;
   }
 });
-</script></body>
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const fields = [
+      { id: "assessee", key: "assessee" },
+      { id: "assessor", key: "assessor_name" },
+      { id: "venue", key: "venue" }
+    ];
+
+    fields.forEach(({ id, key }) => {
+      const input = document.getElementById(id);
+      const storedValue = localStorage.getItem(key);
+      if (storedValue && input) {
+        input.value = storedValue;
+      }
+    });
+  });
+</script>
+
+</body>
 </html>
