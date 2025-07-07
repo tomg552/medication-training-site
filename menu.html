@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Select Medication Type</title>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="styles.css" rel="stylesheet"/>
-<style>
+  <meta charset="utf-8"/>
+  <title>Select Medication Type</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="styles.css" rel="stylesheet"/>
+  <style>
     body {
       background: #f5f9fc;
       font-family: Arial, sans-serif;
@@ -50,73 +49,84 @@
   </style>
 </head>
 <body>
+
 <div class="menu-container">
-<h1>Choose a Medication Activity</h1>
-<div class="user-info" id="userDetails"></div>
-<div class="group">
-<h2>Inhalers</h2>
-<a class="medication-link" href="#" onclick="goToNext('fostair')">Fostair 100/6 Inhaler</a>
-</div>
-<div class="group">
-<h2>Transdermal Patches</h2>
-<a class="medication-link" href="#" onclick="goToNext('buprenorphine')">Buprenorphine Patch</a>
-</div>
-<div class="group">
-<h2>Tablets</h2>
-<a class="medication-link" href="#" onclick="goToNext('cocodamol')">Co-codamol 8/500</a>
-</div>
-<div class="group">
-<h2>Creams</h2>
-<a class="medication-link" href="#" onclick="goToNext('hydrocortisone')">Hydrocortisone 1% Cream</a>
-</div>
-<div class="group">
-<h2>Eye Drops</h2>
-<a class="medication-link" href="#" onclick="goToNext('latanoprost')">Latanoprost Eye Drops</a>
-</div>
-<div class="group">
-<h2>Ear Drops</h2>
-<a class="medication-link" href="#" onclick="goToNext('sofradex')">Sofradex Ear Drops</a>
-</div>
-<div class="group">
-<h2>Liquids</h2>
-<a class="medication-link" href="#" onclick="goToNext('oromorph')">Oromorph Liquid</a>
-</div>
-</div>
-<script>
-    
-    const mode = localStorage.getItem("mode") || "assessee";
-    const userName = localStorage.getItem(mode === "assessor" ? "assessor_name" : "assessee_name") || "";
-    const venue = localStorage.getItem("venue") || "";
-    const assessorName = localStorage.getItem("assessor_name") || "";
+  <h1>Choose a Medication Activity</h1>
+  <div class="user-info" id="userDetails"></div>
 
-    const infoBlock = document.getElementById("userDetails");
+  <div class="group">
+    <h2>Inhalers</h2>
+    <a class="medication-link" href="#" onclick="goToNext('fostair')">Fostair 100/6 Inhaler</a>
+  </div>
+  <div class="group">
+    <h2>Transdermal Patches</h2>
+    <a class="medication-link" href="#" onclick="goToNext('buprenorphine')">Buprenorphine Patch</a>
+  </div>
+  <div class="group">
+    <h2>Tablets</h2>
+    <a class="medication-link" href="#" onclick="goToNext('cocodamol')">Co-codamol 8/500</a>
+  </div>
+  <div class="group">
+    <h2>Creams</h2>
+    <a class="medication-link" href="#" onclick="goToNext('hydrocortisone')">Hydrocortisone 1% Cream</a>
+  </div>
+  <div class="group">
+    <h2>Eye Drops</h2>
+    <a class="medication-link" href="#" onclick="goToNext('latanoprost')">Latanoprost Eye Drops</a>
+  </div>
+  <div class="group">
+    <h2>Ear Drops</h2>
+    <a class="medication-link" href="#" onclick="goToNext('sofradex')">Sofradex Ear Drops</a>
+  </div>
+  <div class="group">
+    <h2>Liquids</h2>
+    <a class="medication-link" href="#" onclick="goToNext('oromorph')">Oromorph Liquid</a>
+  </div>
+</div>
+
+<script>
+  // Prevent access if registration details are missing
+  const mode = localStorage.getItem("mode") || "assessee";
+  const userName = localStorage.getItem(mode === "assessor" ? "assessor_name" : "assessee_name") || "";
+  const venue = localStorage.getItem("venue") || "";
+  const assessorName = localStorage.getItem("assessor_name") || "";
+
+  if (!mode || !venue || (!userName && mode === "assessee")) {
+    alert("Missing registration details. Please start again.");
+    window.location.href = "register.html";
+  }
+
+  // Display user info
+  const infoBlock = document.getElementById("userDetails");
+  if (mode === "assessee") {
+    infoBlock.innerHTML = `<strong>Assessee:</strong> ${userName}<br><strong>Assessor:</strong> ${assessorName}<br><strong>Venue:</strong> ${venue}`;
+  } else {
+    infoBlock.innerHTML = `<strong>Assessor:</strong> ${userName}<br><strong>Venue:</strong> ${venue}`;
+  }
+
+  // Navigate to appropriate activity
+  function goToNext(medKey) {
     if (mode === "assessee") {
-      infoBlock.innerHTML = `<strong>Assessee:</strong> ${userName}<br><strong>Assessor:</strong> ${assessorName}<br><strong>Venue:</strong> ${venue}`;
+      window.location.href = `/medication-training-site/visit_not_started.html?med=${medKey}&mode=assessee`;
     } else {
-      infoBlock.innerHTML = `<strong>Assessor:</strong> ${userName}<br><strong>Venue:</strong> ${venue}`;
+      const med = {
+        fostair: "inhalers",
+        buprenorphine: "patches",
+        cocodamol: "tablets",
+        hydrocortisone: "creams",
+        latanoprost: "eye-drops",
+        sofradex: "ear-drops",
+        oromorph: "liquids"
+      }[medKey];
+      window.location.href = `/medication-training-site/medication_competency_form_styled.html?utm_type=${med}&med=${medKey}&mode=assessor`;
     }
+  }
 
-    function goToNext(medKey) {
-      if (mode === "assessee") {
-        window.location.href = `/medication-training-site/visit_not_started.html?med=${medKey}&mode=assessee`;
-      } else {
-        // Load medicationMap to get utm_type
-        const med = {
-          fostair: "inhalers",
-          buprenorphine: "patches",
-          cocodamol: "tablets",
-          hydrocortisone: "creams",
-          latanoprost: "eye-drops",
-          sofradex: "ear-drops",
-          oromorph: "liquids"
-        }[medKey];
-        window.location.href = `/medication-training-site/medication_competency_form_styled.html?utm_type=${med}&med=${medKey}&mode=assessor`;
-      }
-    }
-  </script>
-<script>
+  // Optional: add styling class
   document.body.classList.add(`${mode}-mode`);
   const container = document.querySelector(".menu-container");
   if (container) container.classList.add(`${mode}-mode`);
-</script></body>
+</script>
+
+</body>
 </html>
