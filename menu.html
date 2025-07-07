@@ -83,10 +83,10 @@
 </div>
 </div>
 <script>
-    const mode = sessionStorage.getItem("mode") || "assessor";
-    const userName = sessionStorage.getItem("userName") || "";
-    const venue = sessionStorage.getItem("venue") || "";
-    const assessorName = sessionStorage.getItem("assessorName") || "";
+    const mode = localStorage.getItem("mode") || "assessee";
+    const userName = localStorage.getItem(mode === "assessor" ? "assessor_name" : "assessee_name") || "";
+    const venue = localStorage.getItem("venue") || "";
+    const assessorName = localStorage.getItem("assessor_name") || "";
 
     const infoBlock = document.getElementById("userDetails");
     if (mode === "assessee") {
@@ -114,7 +114,7 @@
     }
   </script>
 <script>
-  const mode = sessionStorage.getItem("mode") || "assessee";
+  const mode = localStorage.getItem("mode") || "assessee";
   document.body.classList.add(`${mode}-mode`);
   const container = document.querySelector(".menu-container");
   if (container) container.classList.add(`${mode}-mode`);
