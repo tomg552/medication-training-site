@@ -2718,7 +2718,48 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
 
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault(); // prevent default form submit behaviour
 
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        // If multiple inputs share the same name, gather into an array
+        if (data[key]) {
+          if (!Array.isArray(data[key])) {
+            data[key] = [data[key]];
+          }
+          data[key].push(value);
+        } else {
+          data[key] = value;
+        }
+      });
+
+      try {
+        const response = await fetch("https://YOUR_N8N_DOMAIN/webhook/medication", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          window.location.href = "form_submitted.html"; // or another success page
+        } else {
+          alert("There was an error submitting the form.");
+        }
+      } catch (err) {
+        console.error("Form submission error:", err);
+        alert("Submission failed. Please try again later.");
+      }
+    });
+  });
+</script>
 </body>
 </html>
