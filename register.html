@@ -95,6 +95,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!userName || !venue) {
       alert("Please fill in all required fields.");
       return;
+
+    if (userType === "assessor") {
+      const params = new URLSearchParams({
+        assessor: assessorName,
+        venue: venueName,
+        date: selectedDate,
+        utm_type: medicationType
+      });
+  window.location.href = "assessor_menu.html?" + params.toString();
+}
+
     }
 
     localStorage.setItem("assessee_name", userName);
@@ -106,5 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
+
 </body>
 </html>
