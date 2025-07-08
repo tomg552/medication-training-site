@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,90 +42,15 @@
       <fieldset>
         <legend>Checklist</legend>
         <table class="checklist">
-          <tr>
-            <th>Criteria</th>
-            <th>Answer</th>
-          </tr>
-          <tr>
-            <td>Did the member of staff properly prepare everything before starting to administer the medication (e.g. water etc)?</td>
-            <td>
-              <select name="prepared_correctly" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Did the member of staff wash their hands before administering medication, and use effective hygiene measures (e.g. PPE)?</td>
-            <td>
-              <select name="hygiene_measures" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Before preparing or administering the medication, did the member of staff obtain the person's consent?</td>
-            <td>
-              <select name="obtained_consent" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Before selecting, preparing or administering any medication, did the staff member read the eMAR chart accurately?</td>
-            <td>
-              <select name="read_emar" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Was the correct medication and dose selected at the correct time?</td>
-            <td>
-              <select name="correct_med_dose" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Did the member of staff use the appropriate measure for any doses of liquid medication (e.g. oral syringe)?</td>
-            <td>
-              <select name="liquid_measuring" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Did the member of staff sign the eMAR immediately after the medication was administered?</td>
-            <td>
-              <select name="emar_signed_immediately" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>If the medication was not given, was an appropriate code entered on the eMAR?</td>
-            <td>
-              <select name="emar_code_if_not_given" required>
-                <option value="">--</option>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </td>
-          </tr>
+          <tr><th>Criteria</th><th>Answer</th></tr>
+          <tr><td>Did the member of staff properly prepare everything before starting to administer the medication (e.g. water etc)?</td><td><select name="prepared_correctly" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>Did the member of staff wash their hands before administering medication, and use effective hygiene measures (e.g. PPE)?</td><td><select name="hygiene_measures" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>Before preparing or administering the medication, did the member of staff obtain the person's consent?</td><td><select name="obtained_consent" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>Before selecting, preparing or administering any medication, did the staff member read the eMAR chart accurately?</td><td><select name="read_emar" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>Was the correct medication and dose selected at the correct time?</td><td><select name="correct_med_dose" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>Did the member of staff use the appropriate measure for any doses of liquid medication (e.g. oral syringe)?</td><td><select name="liquid_measuring" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>Did the member of staff sign the eMAR immediately after the medication was administered?</td><td><select name="emar_signed_immediately" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
+          <tr><td>If the medication was not given, was an appropriate code entered on the eMAR?</td><td><select name="emar_code_if_not_given" required><option value="">--</option><option value="Y">Yes</option><option value="N">No</option></select></td></tr>
         </table>
 
         <p><strong>Tick the form(s) of medication that were administered correctly:</strong></p>
@@ -156,10 +82,16 @@
 
       <button type="submit">Submit</button>
     </form>
+
+    <div id="confirmation" style="display:none; text-align:center; margin-top:2rem;">
+      <h3>✅ Form submitted successfully!</h3>
+      <p>What would you like to do next?</p>
+      <button onclick="window.location.reload()">Submit Another</button>
+      <button onclick="window.location.href='assessor_menu.html'">Return to Menu</button>
+    </div>
   </div>
 
   <script>
-    // Signature handling
     const canvas = document.getElementById("signature-pad");
     const signatureInput = document.getElementById("trainer_signature");
     const ctx = canvas.getContext("2d");
@@ -170,18 +102,15 @@
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
     });
-
     canvas.addEventListener("mousemove", (e) => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
     });
-
     canvas.addEventListener("mouseup", () => {
       drawing = false;
       signatureInput.value = canvas.toDataURL();
     });
-
     canvas.addEventListener("mouseleave", () => drawing = false);
 
     function clearSignature() {
@@ -189,7 +118,6 @@
       signatureInput.value = "";
     }
 
-    // LocalStorage Prefill
     document.addEventListener("DOMContentLoaded", () => {
       const assessor = localStorage.getItem("assessor_name");
       const assessee = localStorage.getItem("assessee_name");
@@ -197,9 +125,47 @@
       if (assessor) document.getElementById("assessor_name").value = assessor;
       if (assessee) document.getElementById("assessee_name").value = assessee;
 
-      // Set today's date
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("assessment_date").value = today;
+    });
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+      const data = {};
+
+      for (let [key, value] of formData.entries()) {
+        if (data[key]) {
+          if (!Array.isArray(data[key])) data[key] = [data[key]];
+          data[key].push(value);
+        } else {
+          data[key] = value;
+        }
+      }
+
+      ["form_tablets", "form_liquids", "form_creams", "form_patches", "form_inhalers", "form_eye_drops"].forEach(field => {
+        data[field] = form.querySelector(`[name="${field}"]`).checked;
+      });
+
+      fetch("https://routeshealthcare.app.n8n.cloud/webhook-test/meds-checklist-submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      .then(res => {
+        if (res.ok) {
+          form.style.display = "none";
+          document.getElementById("confirmation").style.display = "block";
+        } else {
+          alert("Submission failed. Please try again.");
+        }
+      })
+      .catch(err => {
+        console.error("Submission error:", err);
+        alert("An error occurred. Please check your connection.");
+      });
     });
   </script>
 </body>
