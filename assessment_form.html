@@ -2,104 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Medication Administration Short Assessment</title>
+  <title>Medication Administration Assessment</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    table.checklist {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table.checklist th, table.checklist td {
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      vertical-align: top;
+    }
+    table.checklist th {
+      background-color: #e6f0f8;
+      text-align: left;
+    }
+    canvas {
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
 <body>
   <div class="visit-card">
     <form>
-      <h2>Medication Administration – Short Competency Check</h2>
+      <h2>Medication Administration – Competency Check</h2>
 
-      <label for="assessor_name">Assessor Name</label>
+      <label for="assessor_name">Trainer Name</label>
       <input type="text" id="assessor_name" name="assessor_name" required />
+
+      <label for="assessee_name">Trainee Name</label>
+      <input type="text" id="assessee_name" name="assessee_name" required />
 
       <label for="assessment_date">Date</label>
       <input type="date" id="assessment_date" name="assessment_date" required />
 
       <fieldset>
         <legend>Checklist</legend>
+        <table class="checklist">
+          <tr>
+            <th>Criteria</th>
+            <th>Answer</th>
+          </tr>
+          <tr>
+            <td>Did the member of staff properly prepare everything before starting to administer the medication (e.g. water etc)?</td>
+            <td>
+              <select name="prepared_correctly" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Did the member of staff wash their hands before administering medication, and use effective hygiene measures (e.g. PPE)?</td>
+            <td>
+              <select name="hygiene_measures" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Before preparing or administering the medication, did the member of staff obtain the person's consent?</td>
+            <td>
+              <select name="obtained_consent" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Before selecting, preparing or administering any medication, did the staff member read the eMAR chart accurately?</td>
+            <td>
+              <select name="read_emar" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Was the correct medication and dose selected at the correct time?</td>
+            <td>
+              <select name="correct_med_dose" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Did the member of staff use the appropriate measure for any doses of liquid medication (e.g. oral syringe)?</td>
+            <td>
+              <select name="liquid_measuring" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Did the member of staff sign the eMAR immediately after the medication was administered?</td>
+            <td>
+              <select name="emar_signed_immediately" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>If the medication was not given, was an appropriate code entered on the eMAR?</td>
+            <td>
+              <select name="emar_code_if_not_given" required>
+                <option value="">--</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </td>
+          </tr>
+        </table>
 
-        <label>
-          Did the member of staff properly prepare everything before starting to administer the medication (e.g. water etc)?
-          <select name="prepared_correctly" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Did the member of staff wash their hands before administering medication, and use effective hygiene measures (e.g. PPE)?
-          <select name="hygiene_measures" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Before preparing or administering the medication, did the member of staff obtain the person's consent?
-          <select name="obtained_consent" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Before selecting, preparing or administering any medication, did the staff member read the eMAR chart accurately?
-          <select name="read_emar" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Was the correct medication and dose selected at the correct time?
-          <select name="correct_med_dose" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Did the member of staff use the appropriate measure for any doses of liquid medication (e.g. oral syringe)?
-          <select name="liquid_measuring" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Did the member of staff sign the eMAR immediately after the medication was administered?
-          <select name="emar_signed_immediately" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          If the medication was not given, was an appropriate code entered on the eMAR?
-          <select name="emar_code_if_not_given" required>
-            <option value="">--</option>
-            <option value="Y">Yes</option>
-            <option value="N">No</option>
-          </select>
-        </label>
-
-        <label>
-          Tick the form(s) of medication that were administered correctly:
-        </label>
-        <label><input type="checkbox" name="form_tablets" /> Tablets</label>
-        <label><input type="checkbox" name="form_liquids" /> Liquids</label>
-        <label><input type="checkbox" name="form_creams" /> Creams</label>
-        <label><input type="checkbox" name="form_patches" /> Transdermal Patches</label>
-        <label><input type="checkbox" name="form_inhalers" /> Inhalers</label>
-        <label><input type="checkbox" name="form_eye_drops" /> Eye Drops</label>
+        <p><strong>Tick the form(s) of medication that were administered correctly:</strong></p>
+        <label><input type="checkbox" name="form_tablets" /> Tablets</label><br />
+        <label><input type="checkbox" name="form_liquids" /> Liquids</label><br />
+        <label><input type="checkbox" name="form_creams" /> Creams</label><br />
+        <label><input type="checkbox" name="form_patches" /> Transdermal Patches</label><br />
+        <label><input type="checkbox" name="form_inhalers" /> Inhalers</label><br />
+        <label><input type="checkbox" name="form_eye_drops" /> Eye Drops</label><br /><br />
 
         <label>
           Outcome: The staff member has demonstrated competence within this classroom scenario to administer medication
@@ -113,51 +147,60 @@
         <label for="trainer_comments">Trainer Comments</label>
         <textarea id="trainer_comments" name="trainer_comments"></textarea>
 
-        <label for="trainer_name">Trainer Name</label>
-        <input type="text" id="trainer_name" name="trainer_name" required />
-
         <label for="trainer_signature">Trainer Signature</label>
         <canvas id="signature-pad" width="400" height="150" style="border:1px solid #ccc; background:#fff;"></canvas>
         <br />
         <button type="button" onclick="clearSignature()">Clear Signature</button>
         <input type="hidden" name="trainer_signature" id="trainer_signature" />
-
       </fieldset>
 
       <button type="submit">Submit</button>
     </form>
   </div>
 
-<script>
-  const canvas = document.getElementById("signature-pad");
-  const signatureInput = document.getElementById("trainer_signature");
-  const ctx = canvas.getContext("2d");
-  let drawing = false;
+  <script>
+    // Signature handling
+    const canvas = document.getElementById("signature-pad");
+    const signatureInput = document.getElementById("trainer_signature");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
 
-  canvas.addEventListener("mousedown", (e) => {
-    drawing = true;
-    ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY);
-  });
+    canvas.addEventListener("mousedown", (e) => {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
 
-  canvas.addEventListener("mousemove", (e) => {
-    if (!drawing) return;
-    ctx.lineTo(e.offsetX, e.offsetY);
-    ctx.stroke();
-  });
+    canvas.addEventListener("mousemove", (e) => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+    });
 
-  canvas.addEventListener("mouseup", () => {
-    drawing = false;
-    signatureInput.value = canvas.toDataURL();
-  });
+    canvas.addEventListener("mouseup", () => {
+      drawing = false;
+      signatureInput.value = canvas.toDataURL();
+    });
 
-  canvas.addEventListener("mouseleave", () => drawing = false);
+    canvas.addEventListener("mouseleave", () => drawing = false);
 
-  function clearSignature() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    signatureInput.value = "";
-  }
-</script>
+    function clearSignature() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      signatureInput.value = "";
+    }
 
+    // LocalStorage Prefill
+    document.addEventListener("DOMContentLoaded", () => {
+      const assessor = localStorage.getItem("assessor_name");
+      const assessee = localStorage.getItem("assessee_name");
+
+      if (assessor) document.getElementById("assessor_name").value = assessor;
+      if (assessee) document.getElementById("assessee_name").value = assessee;
+
+      // Set today's date
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("assessment_date").value = today;
+    });
+  </script>
 </body>
 </html>
