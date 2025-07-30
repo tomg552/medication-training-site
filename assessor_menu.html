@@ -30,7 +30,6 @@
     });
 
     function goToForm() {
-      const utm_type = document.getElementById("medicationType").value;
       const url = new URL("medication-training-site/assessment_form.html", window.location.origin);
 
       url.searchParams.set("utm_type", utm_type);
