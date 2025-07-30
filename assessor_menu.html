@@ -32,7 +32,6 @@
     function goToForm() {
       const url = new URL("medication-training-site/assessment_form.html", window.location.origin);
 
-      url.searchParams.set("utm_type", utm_type);
       window.location.href = url.toString();
     }
   </script>
