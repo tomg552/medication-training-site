@@ -150,7 +150,7 @@
         data[field] = form.querySelector(`[name="${field}"]`).checked;
       });
 
-      fetch("https://routeshealthcare.app.n8n.cloud/webhook-test/meds-checklist-submit", {
+      fetch("https://routeshealthcare.app.n8n.cloud/webhook/meds-checklist-submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
