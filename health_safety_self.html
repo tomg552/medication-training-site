@@ -289,25 +289,58 @@
   </div>
 
  <script>
-document.getElementById('hs-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  // include the live “No” count if present
-  const noCountEl = document.getElementById('noCount');
-  if (noCountEl) fd.append('no_count', noCountEl.textContent || '0');
+  // Prefill session details from localStorage (if saved on the start page)
+  (function () {
+    const a = localStorage.getItem('assessor_name') || '';
+    const d = localStorage.getItem('training_date') || '';
+    const v = localStorage.getItem('venue') || '';
+    if (a) document.getElementById('assessor_name').value = a;
+    if (d) document.getElementById('training_date').value = d;
+    if (v) document.getElementById('venue').value = v;
+  })();
 
-  const payload = Object.fromEntries(fd.entries());
-  try {
-    const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/hs-self-submit', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-    alert(res.ok ? 'Submitted – thank you!' : 'There was an issue submitting your form.');
-  } catch (err) {
-    alert('Network error submitting form.');
+  // Count No answers for simple risk summary
+  function updateNoCount() {
+    const selects = document.querySelectorAll('tbody select');
+    let count = 0;
+    selects.forEach(s => { if (s.value === 'No') count++; });
+    const el = document.getElementById('noCount');
+    if (el) el.textContent = count;
+    return count;
   }
-});
+  document.addEventListener('change', (e) => {
+    if (e.target.tagName === 'SELECT') updateNoCount();
+  });
+  // Initialize on load so 0 shows immediately
+  document.addEventListener('DOMContentLoaded', updateNoCount);
+
+  // Real submit → n8n webhook
+  document.getElementById('hs-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Ensure we capture the latest "No" count
+    const noCount = updateNoCount();
+
+    const fd = new FormData(e.target);
+    // Include no_count (and form identity/version if not already in hidden inputs)
+    if (!fd.has('no_count')) fd.append('no_count', String(noCount));
+    if (!fd.has('form_type')) fd.append('form_type', 'health_safety');
+    if (!fd.has('form_version')) fd.append('form_version', '2025-08-18');
+
+    const payload = Object.fromEntries(fd.entries());
+
+    try {
+      const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/hs-self-submit', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      alert(res.ok ? 'Submitted – thank you!' : 'There was an issue submitting your form.');
+    } catch (err) {
+      alert('Network error submitting form.');
+    }
+  });
 </script>
+
 </body>
 </html>
