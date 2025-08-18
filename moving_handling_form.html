@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moving &amp; Handling – Delegate Self-Assessment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style="background:#f0f4f8; font-family: Arial, sans-serif;">
+  <div class="visit-card">
+    <div class="header">🧍 Moving &amp; Handling – Delegate Self-Assessment</div>
+
+    <form id="mh-form">
+      <!-- Session details (prefilled from start menu if used) -->
+      <fieldset>
+        <legend>Session Details</legend>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem;">
+          <label>Assessor
+            <input id="assessor_name" name="assessor_name" type="text" placeholder="Assessor name">
+          </label>
+          <label>Date
+            <input id="training_date" name="training_date" type="date">
+          </label>
+          <label>Venue
+            <input id="venue" name="venue" type="text" placeholder="Training venue / hub">
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Candidate details -->
+      <fieldset>
+        <legend>Learner Details</legend>
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: .75rem;">
+          <label>Name
+            <input name="learner_name" type="text" required>
+          </label>
+          <label>Date
+            <input name="learner_date" type="date" required>
+          </label>
+          <label>Hub
+            <input name="hub" type="text" required>
+          </label>
+          <label>Signature
+            <input name="learner_signature" type="text" placeholder="Type name or draw on paper">
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Self-assessment table -->
+      <fieldset>
+        <legend>Moving &amp; Handling Delegate Self-Assessment</legend>
+        <p>Please fill in the table below regarding Moving and Handling techniques.</p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:55%;">Technique</th>
+              <th style="width:15%;">Practiced<br>(Yes/No)</th>
+              <th style="width:30%;">Confident using technique<br>(Yes/No)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Each row mirrors the Word document items -->
+            <tr>
+              <td>Assisting a client to the edge of a chair</td>
+              <td>
+                <select name="tech_edge_chair_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_edge_chair_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Sit to stand – with assistance of one and two carers</td>
+              <td>
+                <select name="tech_sit_to_stand_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_sit_to_stand_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Assisted walk</td>
+              <td>
+                <select name="tech_assisted_walk_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_assisted_walk_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Using the Transfer Board (Banana board)</td>
+              <td>
+                <select name="tech_transfer_board_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_transfer_board_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Using the Handling Belt</td>
+              <td>
+                <select name="tech_handling_belt_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_handling_belt_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Using the Rota-Stand</td>
+              <td>
+                <select name="tech_rotastand_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_rotastand_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Fitting a sling in the chair</td>
+              <td>
+                <select name="tech_sling_chair_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_sling_chair_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Hoisting with Manual Hoist</td>
+              <td>
+                <select name="tech_manual_hoist_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_manual_hoist_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Fitting a slide sheet in bed using barrel roll – Two carers</td>
+              <td>
+                <select name="tech_slide_sheet_fit_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_slide_sheet_fit_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Repositioning in bed using a slide sheet – Two carers</td>
+              <td>
+                <select name="tech_slide_sheet_reposition_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_slide_sheet_reposition_confident" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </fieldset>
+
+      <!-- Comments -->
+      <fieldset>
+        <legend>Learner Comments</legend>
+        <p>Do you feel comfortable and confident carrying out these techniques? Do you require any additional support?</p>
+        <textarea name="learner_comments" rows="6"></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>Trainer Comments</legend>
+        <textarea name="trainer_comments" rows="6"></textarea>
+      </fieldset>
+
+      <!-- Outcome -->
+      <fieldset>
+        <legend>Outcome</legend>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: .75rem; align-items:center;">
+          <label>
+            <input type="radio" name="outcome" value="Pass" required> Pass
+          </label>
+          <label>
+            <input type="radio" name="outcome" value="Refer for further support" required> Refer for further support
+          </label>
+        </div>
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: .75rem; margin-top: .75rem;">
+          <label>Trainer Name
+            <input name="trainer_name" type="text">
+          </label>
+          <label>Trainer Signature
+            <input name="trainer_signature" type="text">
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="buttons">
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Prefill session details from localStorage (if user saved them on the start menu)
+    (function() {
+      const a = localStorage.getItem('assessor_name') || '';
+      const d = localStorage.getItem('training_date') || '';
+      const v = localStorage.getItem('venue') || '';
+      if (a) document.getElementById('assessor_name').value = a;
+      if (d) document.getElementById('training_date').value = d;
+      if (v) document.getElementById('venue').value = v;
+    })();
+
+    // Basic client-side guard to prevent accidental submission without any choices
+    document.getElementById('mh-form').addEventListener('submit', function(e){
+      // This is a stub; integrate with your webhook later.
+      alert('Form ready to hook into your submission flow.');
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
