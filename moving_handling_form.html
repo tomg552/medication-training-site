@@ -11,6 +11,9 @@
     <div class="header">🧍 Moving &amp; Handling – Delegate Self-Assessment</div>
 
     <form id="mh-form">
+      <input type="hidden" name="form_type" value="moving_handling">
+      <input type="hidden" name="form_version" value="2025-08-18">
+
       <!-- Session details (prefilled from start menu if used) -->
       <fieldset>
         <legend>Session Details</legend>
@@ -273,23 +276,43 @@
     </form>
   </div>
 
-  <script>
-    // Prefill session details from localStorage (if user saved them on the start menu)
-    (function() {
-      const a = localStorage.getItem('assessor_name') || '';
-      const d = localStorage.getItem('training_date') || '';
-      const v = localStorage.getItem('venue') || '';
-      if (a) document.getElementById('assessor_name').value = a;
-      if (d) document.getElementById('training_date').value = d;
-      if (v) document.getElementById('venue').value = v;
-    })();
+<script>
+  // Prefill session details from localStorage (if saved on the start page)
+  (function () {
+    const a = localStorage.getItem('assessor_name') || '';
+    const d = localStorage.getItem('training_date') || '';
+    const v = localStorage.getItem('venue') || '';
+    if (a) document.getElementById('assessor_name').value = a;
+    if (d) document.getElementById('training_date').value = d;
+    if (v) document.getElementById('venue').value = v;
+  })();
 
-    // Basic client-side guard to prevent accidental submission without any choices
-    document.getElementById('mh-form').addEventListener('submit', function(e){
-      // This is a stub; integrate with your webhook later.
-      alert('Form ready to hook into your submission flow.');
-      e.preventDefault();
-    });
-  </script>
+  // Submit → n8n (Moving & Handling)
+  document.getElementById('mh-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+    const fd = new FormData(e.target);
+    if (!fd.has('form_type')) fd.append('form_type', 'moving_handling');
+    if (!fd.has('form_version')) fd.append('form_version', '2025-08-18');
+
+    const payload = Object.fromEntries(fd.entries());
+
+    try {
+      const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/moving-handling-submit', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      alert(res.ok ? 'Submitted – thank you!' : 'There was an issue submitting your form.');
+    } catch (err) {
+      alert('Network error submitting form.');
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
+    }
+  });
+</script>
+
 </body>
 </html>
