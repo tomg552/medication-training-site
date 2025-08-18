@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Life Support – Competency Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style="background:#f0f4f8; font-family: Arial, sans-serif;">
+  <div class="visit-card">
+    <div class="header">❤️ Basic Life Support – Competency Form</div>
+
+    <form id="bls-form">
+      <!-- Session details (prefilled from start menu if used) -->
+      <fieldset>
+        <legend>Session Details</legend>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem;">
+          <label>Assessor
+            <input id="assessor_name" name="assessor_name" type="text" placeholder="Assessor name">
+          </label>
+          <label>Date
+            <input id="training_date" name="training_date" type="date">
+          </label>
+          <label>Venue
+            <input id="venue" name="venue" type="text" placeholder="Training venue / hub">
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Learner details -->
+      <fieldset>
+        <legend>Learner Details</legend>
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: .75rem;">
+          <label>Name
+            <input name="learner_name" type="text" required>
+          </label>
+          <label>Date
+            <input name="learner_date" type="date" required>
+          </label>
+          <label>Hub
+            <input name="hub" type="text" required>
+          </label>
+          <label>Signature
+            <input name="learner_signature" type="text" placeholder="Type name or draw on paper">
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Techniques table -->
+      <fieldset>
+        <legend>First Aid Techniques</legend>
+        <p>Please fill in the table below regarding First Aid techniques.</p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:55%;">Technique</th>
+              <th style="width:15%;">Practiced<br>(Yes/No)</th>
+              <th style="width:30%;">Competent<br>(Yes/No)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CPR – Adult</td>
+              <td>
+                <select name="tech_cpr_adult_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_cpr_adult_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Recovery position</td>
+              <td>
+                <select name="tech_recovery_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_recovery_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Choking – Adult</td>
+              <td>
+                <select name="tech_choking_adult_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_choking_adult_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Bleeds (bandaging)</td>
+              <td>
+                <select name="tech_bleeds_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+              <td>
+                <select name="tech_bleeds_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </fieldset>
+
+      <!-- Understanding question -->
+      <fieldset>
+        <legend>Course Understanding</legend>
+        <label>Do you feel you have a good understanding of the medical conditions covered within the course?
+          <select name="understanding_good" required>
+            <option value=""></option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <!-- Comments -->
+      <fieldset>
+        <legend>Learner Comments</legend>
+        <p>Do you feel comfortable carrying out these techniques? Do you require any additional support?</p>
+        <textarea name="learner_comments" rows="6"></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>Trainer Comments</legend>
+        <textarea name="trainer_comments" rows="6"></textarea>
+      </fieldset>
+
+      <!-- Outcome -->
+      <fieldset>
+        <legend>Outcome</legend>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: .75rem; align-items:center;">
+          <label>
+            <input type="radio" name="outcome" value="Pass" required> Pass
+          </label>
+          <label>
+            <input type="radio" name="outcome" value="Refer for further support" required> Refer for further support
+          </label>
+        </div>
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: .75rem; margin-top: .75rem;">
+          <label>Trainer Name
+            <input name="trainer_name" type="text">
+          </label>
+          <label>Trainer Signature
+            <input name="trainer_signature" type="text">
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="buttons">
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Prefill session details from localStorage (if user saved them on the start page)
+    (function() {
+      const a = localStorage.getItem('assessor_name') || '';
+      const d = localStorage.getItem('training_date') || '';
+      const v = localStorage.getItem('venue') || '';
+      if (a) document.getElementById('assessor_name').value = a;
+      if (d) document.getElementById('training_date').value = d;
+      if (v) document.getElementById('venue').value = v;
+    })();
+
+    // Stub submit until webhook is provided
+    document.getElementById('bls-form').addEventListener('submit', function(e){
+      alert('BLS form ready to hook into your submission flow.');
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
