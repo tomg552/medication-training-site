@@ -5,6 +5,30 @@
   <title>Basic Life Support – Competency Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .sig-pad {
+      border: 1px dashed #999;
+      background:#fff;
+      border-radius: 6px;
+      height: 150px;
+      touch-action: none;
+    }
+    .sig-tools {
+      display:flex; gap:.5rem; align-items:center; margin-top:.5rem;
+    }
+    .sig-tools button { padding:.4rem .6rem; }
+    .muted { color:#666; font-size:.9rem; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border:1px solid #ddd; padding:.5rem; }
+    thead th { background:#f7f9fb; }
+    .visit-card { max-width: 1000px; margin: 1.25rem auto; background: #fff; padding: 1rem 1.25rem; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+    .header { font-weight: 700; font-size: 1.25rem; margin-bottom: .75rem; }
+    fieldset { border:1px solid #e1e6ed; padding:1rem; border-radius:8px; margin-bottom:1rem; background:#fafcff; }
+    legend { padding:0 .5rem; font-weight:600; }
+    label { display:flex; flex-direction:column; gap:.35rem; }
+    .buttons { display:flex; gap:.75rem; justify-content:flex-end; margin-top:1rem; }
+    button[type="submit"] { padding:.6rem 1rem; }
+  </style>
 </head>
 <body style="background:#f0f4f8; font-family: Arial, sans-serif;">
   <div class="visit-card">
@@ -13,6 +37,11 @@
     <form id="bls-form">
       <input type="hidden" name="form_type" value="bls">
       <input type="hidden" name="form_version" value="2025-08-18">
+
+      <!-- Computed/hidden fields -->
+      <input type="hidden" name="assessment_outcome_bool" id="assessment_outcome_bool">
+      <input type="hidden" name="assessor_signature_base64" id="assessor_signature_base64">
+      <input type="hidden" name="assessor_signature_filename" id="assessor_signature_filename">
 
       <!-- Session details (prefilled from start menu if used) -->
       <fieldset>
@@ -28,12 +57,24 @@
             <input id="venue" name="venue" type="text" placeholder="Training venue / hub">
           </label>
         </div>
+
+        <!-- Assessor signature -->
+        <div style="margin-top:.75rem;">
+          <label style="gap:.5rem;">
+            <span>Assessor Signature</span>
+            <canvas id="assessorSig" class="sig-pad"></canvas>
+          </label>
+          <div class="sig-tools">
+            <button type="button" id="clearSig">Clear</button>
+            <span class="muted">Sign inside the box. Signature is saved as a PNG when you submit.</span>
+          </div>
+        </div>
       </fieldset>
 
       <!-- Learner details -->
       <fieldset>
         <legend>Learner Details</legend>
-        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: .75rem;">
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap: .75rem;">
           <label>Name
             <input name="learner_name" type="text" required>
           </label>
@@ -43,9 +84,7 @@
           <label>Hub
             <input name="hub" type="text" required>
           </label>
-          <label>Signature
-            <input name="learner_signature" type="text" placeholder="Type name or draw on paper">
-          </label>
+          <!-- Learner signature REMOVED per request -->
         </div>
       </fieldset>
 
@@ -147,7 +186,6 @@
       </fieldset>
 
       <!-- Comments -->
-
       <fieldset>
         <legend>Trainer Comments</legend>
         <textarea name="trainer_comments" rows="6"></textarea>
@@ -162,14 +200,6 @@
           </label>
           <label>
             <input type="radio" name="outcome" value="Refer for further support" required> Refer for further support
-          </label>
-        </div>
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: .75rem; margin-top: .75rem;">
-          <label>Trainer Name
-            <input name="trainer_name" type="text">
-          </label>
-          <label>Trainer Signature
-            <input name="trainer_signature" type="text">
           </label>
         </div>
       </fieldset>
@@ -191,16 +221,97 @@
     if (v) document.getElementById('venue').value = v;
   })();
 
+  // Simple signature pad
+  (function() {
+    const canvas = document.getElementById('assessorSig');
+    const clearBtn = document.getElementById('clearSig');
+    const ctx = canvas.getContext('2d');
+    let drawing = false, last = null;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#111';
+      // placeholder hint
+      ctx.fillStyle = '#999';
+      ctx.font = '12px Arial';
+      ctx.fillText('Sign here', 10, 20);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function pos(e) {
+      if (e.touches && e.touches[0]) {
+        const r = canvas.getBoundingClientRect();
+        return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+      } else {
+        const r = canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+    }
+    function start(e){ drawing = true; last = pos(e); e.preventDefault(); }
+    function move(e){
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      last = p;
+      e.preventDefault();
+    }
+    function end(){ drawing = false; last = null; }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+
+    canvas.addEventListener('touchstart', start, {passive:false});
+    canvas.addEventListener('touchmove', move, {passive:false});
+    canvas.addEventListener('touchend', end);
+
+    clearBtn.addEventListener('click', () => resizeCanvas());
+  })();
+
+  function slugify(s) {
+    return (s || '').toString().trim().toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
   // Submit → n8n (BLS)
   document.getElementById('bls-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = e.target.querySelector('button[type="submit"]');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
+    // Compute assessment_outcome_bool based on radio selection
+    const chosenOutcome = (new FormData(e.target)).get('outcome') || '';
+    document.getElementById('assessment_outcome_bool').value = (chosenOutcome === 'Pass') ? 'true' : 'false';
+
+    // Capture assessor signature -> hidden fields
+    const sigCanvas = document.getElementById('assessorSig');
+    // Convert to PNG data URL
+    const dataUrl = sigCanvas.toDataURL('image/png');
+    // Strip prefix to leave raw base64
+    const base64 = dataUrl.split(',')[1] || '';
+    const assessorName = document.getElementById('assessor_name').value || 'assessor';
+    const dateStr = document.getElementById('training_date').value || new Date().toISOString().slice(0,10);
+    const filename = `assessor_signature_${slugify(assessorName)}_${dateStr}.png`;
+    document.getElementById('assessor_signature_base64').value = base64;
+    document.getElementById('assessor_signature_filename').value = filename;
+
+    // Build payload
     const fd = new FormData(e.target);
     if (!fd.has('form_type')) fd.append('form_type', 'bls');
     if (!fd.has('form_version')) fd.append('form_version', '2025-08-18');
 
+    // Promote to a plain object for JSON POST
     const payload = Object.fromEntries(fd.entries());
 
     try {
@@ -216,7 +327,7 @@
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
     }
   });
-</script>
+  </script>
 
 </body>
 </html>
