@@ -2,17 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Moving &amp; Handling – Delegate Self-Assessment</title>
+  <title>Basic Life Support – Competency Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .sig-pad {
+      border: 1px dashed #999;
+      background:#fff;
+      border-radius: 6px;
+      height: 150px;
+      touch-action: none;
+    }
+    .sig-tools {
+      display:flex; gap:.5rem; align-items:center; margin-top:.5rem;
+    }
+    .sig-tools button { padding:.4rem .6rem; }
+    .muted { color:#666; font-size:.9rem; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border:1px solid #ddd; padding:.5rem; }
+    thead th { background:#f7f9fb; }
+    .visit-card { max-width: 1000px; margin: 1.25rem auto; background: #fff; padding: 1rem 1.25rem; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+    .header { font-weight: 700; font-size: 1.25rem; margin-bottom: .75rem; }
+    fieldset { border:1px solid #e1e6ed; padding:1rem; border-radius:8px; margin-bottom:1rem; background:#fafcff; }
+    legend { padding:0 .5rem; font-weight:600; }
+    label { display:flex; flex-direction:column; gap:.35rem; }
+    .buttons { display:flex; gap:.75rem; justify-content:flex-end; margin-top:1rem; }
+    button[type="submit"] { padding:.6rem 1rem; }
+  </style>
 </head>
 <body style="background:#f0f4f8; font-family: Arial, sans-serif;">
   <div class="visit-card">
-    <div class="header">🧍 Moving &amp; Handling – Delegate Self-Assessment</div>
+    <div class="header">❤️ Basic Life Support – Competency Form</div>
 
-    <form id="mh-form">
-      <input type="hidden" name="form_type" value="moving_handling">
+    <form id="bls-form">
+      <input type="hidden" name="form_type" value="bls">
       <input type="hidden" name="form_version" value="2025-08-18">
+
+      <!-- Computed/hidden fields -->
+      <input type="hidden" name="assessment_outcome_bool" id="assessment_outcome_bool">
+      <input type="hidden" name="assessor_signature_base64" id="assessor_signature_base64">
+      <input type="hidden" name="assessor_signature_filename" id="assessor_signature_filename">
 
       <!-- Session details (prefilled from start menu if used) -->
       <fieldset>
@@ -28,12 +57,24 @@
             <input id="venue" name="venue" type="text" placeholder="Training venue / hub">
           </label>
         </div>
+
+        <!-- Assessor signature -->
+        <div style="margin-top:.75rem;">
+          <label style="gap:.5rem;">
+            <span>Assessor Signature</span>
+            <canvas id="assessorSig" class="sig-pad"></canvas>
+          </label>
+          <div class="sig-tools">
+            <button type="button" id="clearSig">Clear</button>
+            <span class="muted">Sign inside the box. Signature is saved as a PNG when you submit.</span>
+          </div>
+        </div>
       </fieldset>
 
       <!-- Learner details -->
       <fieldset>
         <legend>Learner Details</legend>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem;">
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap: .75rem;">
           <label>Name
             <input name="learner_name" type="text" required>
           </label>
@@ -43,149 +84,88 @@
           <label>Hub
             <input name="hub" type="text" required>
           </label>
+          <!-- Learner signature REMOVED per request -->
         </div>
       </fieldset>
 
-      <!-- Self-assessment table -->
+      <!-- Techniques table -->
       <fieldset>
-        <legend>Moving &amp; Handling Delegate Self-Assessment</legend>
-        <p>Please fill in the table below regarding Moving and Handling techniques.</p>
+        <legend>First Aid Techniques</legend>
+        <p>Please fill in the table below regarding First Aid techniques.</p>
         <table>
           <thead>
             <tr>
               <th style="width:55%;">Technique</th>
               <th style="width:15%;">Practiced<br>(Yes/No)</th>
-              <th style="width:30%;">Confident using technique<br>(Yes/No)</th>
+              <th style="width:30%;">Competent<br>(Yes/No)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Assisting a client to the edge of a chair</td>
+              <td>CPR – Adult</td>
               <td>
-                <select name="tech_edge_chair_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_cpr_adult_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
               <td>
-                <select name="tech_edge_chair_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Sit to stand – with assistance of one and two carers</td>
-              <td>
-                <select name="tech_sit_to_stand_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_sit_to_stand_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_cpr_adult_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
             </tr>
             <tr>
-              <td>Assisted walk</td>
+              <td>Recovery position</td>
               <td>
-                <select name="tech_assisted_walk_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_recovery_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
               <td>
-                <select name="tech_assisted_walk_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Using the Transfer Board (Banana board)</td>
-              <td>
-                <select name="tech_transfer_board_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_transfer_board_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_recovery_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
             </tr>
             <tr>
-              <td>Using the Handling Belt</td>
+              <td>Choking – Adult</td>
               <td>
-                <select name="tech_handling_belt_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_choking_adult_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
               <td>
-                <select name="tech_handling_belt_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Using the Rota-Stand</td>
-              <td>
-                <select name="tech_rotastand_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_rotastand_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_choking_adult_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
             </tr>
             <tr>
-              <td>Fitting a sling in the chair</td>
+              <td>Bleeds (bandaging)</td>
               <td>
-                <select name="tech_sling_chair_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_bleeds_practiced" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
               <td>
-                <select name="tech_sling_chair_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Hoisting with Manual Hoist</td>
-              <td>
-                <select name="tech_manual_hoist_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_manual_hoist_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Fitting a slide sheet in bed using barrel roll – Two carers</td>
-              <td>
-                <select name="tech_slide_sheet_fit_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_slide_sheet_fit_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Repositioning in bed using a slide sheet – Two carers</td>
-              <td>
-                <select name="tech_slide_sheet_reposition_practiced" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_slide_sheet_reposition_confident" required>
-                  <option value=""></option><option>Yes</option><option>No</option>
+                <select name="tech_bleeds_competent" required>
+                  <option value=""></option>
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </td>
             </tr>
@@ -193,7 +173,19 @@
         </table>
       </fieldset>
 
-      <!-- Trainer Comments -->
+      <!-- Understanding question -->
+      <fieldset>
+        <legend>Course Understanding</legend>
+        <label>Do you feel you have a good understanding of the medical conditions covered within the course?
+          <select name="understanding_good" required>
+            <option value=""></option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <!-- Comments -->
       <fieldset>
         <legend>Trainer Comments</legend>
         <textarea name="trainer_comments" rows="6"></textarea>
@@ -203,158 +195,139 @@
       <fieldset>
         <legend>Outcome</legend>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: .75rem; align-items:center;">
-          <label><input type="radio" name="outcome" value="Pass" required> Pass</label>
-          <label><input type="radio" name="outcome" value="Refer for further support" required> Refer for further support</label>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: .75rem; margin-top: .75rem;">
-          <label>Trainer Name
-            <input name="trainer_name" type="text">
+          <label>
+            <input type="radio" name="outcome" value="Pass" required> Pass
           </label>
-
-          <div class="sig-field">
-            <label><strong>Trainer Signature</strong></label>
-            <canvas id="trainerSig" width="800" height="160"
-              style="width:100%;height:140px;background:#fff;touch-action:none;display:block;border:1px solid #e5e7eb;border-radius:6px"></canvas>
-            <button type="button" id="trainerSigClear">Clear</button>
-          </div>
+          <label>
+            <input type="radio" name="outcome" value="Refer for further support" required> Refer for further support
+          </label>
         </div>
-
-        <!-- Hidden fields populated on submit -->
-        <input type="hidden" name="trainer_signature_dataurl" id="trainer_signature_dataurl">
-        <input type="hidden" name="trainer_signature_filename" id="trainer_signature_filename">
       </fieldset>
 
-      <div class="buttons" style="display:flex; gap:.5rem;">
-        <button type="button" onclick="location.href='home.html'">Back</button>
+      <div class="buttons">
         <button type="submit">Submit</button>
       </div>
     </form>
   </div>
 
   <script>
-    // Prefill from localStorage
-    (function () {
-      const a = localStorage.getItem('assessor_name') || '';
-      const d = localStorage.getItem('training_date') || '';
-      const v = localStorage.getItem('venue') || '';
-      const A = document.getElementById('assessor_name');
-      const D = document.getElementById('training_date');
-      const V = document.getElementById('venue');
-      if (A && a) A.value = a;
-      if (D && d) D.value = d;
-      if (V && v) V.value = v;
-    })();
+  // Prefill session details from localStorage (if saved on the start page)
+  (function () {
+    const a = localStorage.getItem('assessor_name') || '';
+    const d = localStorage.getItem('training_date') || '';
+    const v = localStorage.getItem('venue') || '';
+    if (a) document.getElementById('assessor_name').value = a;
+    if (d) document.getElementById('training_date').value = d;
+    if (v) document.getElementById('venue').value = v;
+  })();
 
-    // Signature pad (pointer events; high-DPI safe)
-    function setupSigPad(canvasId, clearBtnId) {
-      const canvas = document.getElementById(canvasId);
-      if (!canvas) return null;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      let drawing = false, hasInk = false;
+  // Simple signature pad
+  (function() {
+    const canvas = document.getElementById('assessorSig');
+    const clearBtn = document.getElementById('clearSig');
+    const ctx = canvas.getContext('2d');
+    let drawing = false, last = null;
 
-      function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        const rect = canvas.getBoundingClientRect();
-        const w = Math.max(1, Math.round(rect.width * ratio));
-        const h = Math.max(1, Math.round(rect.height * ratio));
-        if (canvas.width !== w || canvas.height !== h) {
-          canvas.width = w; canvas.height = h;
-          ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-          ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#111827';
-        }
-      }
-      resizeCanvas();
-      if (window.ResizeObserver) new ResizeObserver(resizeCanvas).observe(canvas);
-      window.addEventListener('resize', resizeCanvas);
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#111';
+      // placeholder hint
+      ctx.fillStyle = '#999';
+      ctx.font = '12px Arial';
+      ctx.fillText('Sign here', 10, 20);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
-      const getPos = (e) => {
+    function pos(e) {
+      if (e.touches && e.touches[0]) {
         const r = canvas.getBoundingClientRect();
-        const x = (e.clientX ?? e.touches?.[0]?.clientX) - r.left;
-        const y = (e.clientY ?? e.touches?.[0]?.clientY) - r.top;
-        return { x, y };
-      };
-
-      const down = (e) => { e.preventDefault(); drawing = true; hasInk = true; const {x,y}=getPos(e); ctx.beginPath(); ctx.moveTo(x,y); };
-      const move = (e) => { if (!drawing) return; e.preventDefault(); const {x,y}=getPos(e); ctx.lineTo(x,y); ctx.stroke(); };
-      const up   = (e) => { if (!drawing) return; e.preventDefault(); drawing = false; };
-
-      if ('PointerEvent' in window) {
-        canvas.addEventListener('pointerdown', down, { passive:false });
-        canvas.addEventListener('pointermove', move, { passive:false });
-        canvas.addEventListener('pointerup', up);
-        canvas.addEventListener('pointerleave', up);
-        canvas.addEventListener('pointercancel', up);
+        return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
       } else {
-        canvas.addEventListener('mousedown', down);
-        canvas.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', up);
-        canvas.addEventListener('touchstart', down, { passive:false });
-        canvas.addEventListener('touchmove', move, { passive:false });
-        canvas.addEventListener('touchend', up);
+        const r = canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
       }
-
-      const clearBtn = document.getElementById(clearBtnId);
-      clearBtn?.addEventListener('click', () => { ctx.clearRect(0,0,canvas.width,canvas.height); hasInk = false; });
-
-      return {
-        toDataURL: () => (hasInk ? canvas.toDataURL('image/png') : ''),
-        hasInk: () => hasInk,
-        clear: () => { ctx.clearRect(0,0,canvas.width,canvas.height); hasInk = false; }
-      };
     }
-
-    // Init trainer signature pad
-    const trainerSigPad = setupSigPad('trainerSig', 'trainerSigClear');
-
-    // Helpers for safe filenames
-    function slug(s) {
-      return String(s || '')
-        .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^A-Za-z0-9_-]+/g, '-')
-        .replace(/-+/g, '-').replace(/^-+|-+$/g, '')
-        .slice(0, 60);
-    }
-    function safeDate(s) {
-      const d = new Date(s);
-      if (!isNaN(d)) return d.toISOString().slice(0,10);
-      return String(s || '').replace(/[^0-9]/g, '').replace(/^(\d{4})(\d{2})(\d{2}).*$/, '$1-$2-$3');
-    }
-
-    // Submit → n8n (Moving & Handling)
-    document.getElementById('mh-form').addEventListener('submit', async (e) => {
+    function start(e){ drawing = true; last = pos(e); e.preventDefault(); }
+    function move(e){
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      last = p;
       e.preventDefault();
-      const form = e.target;
-      const submitBtn = form.querySelector('button[type="submit"]');
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+    }
+    function end(){ drawing = false; last = null; }
 
-      // Push trainer signature data + filename into hidden inputs
-      const trainerName = form.querySelector('[name="trainer_name"]')?.value || '';
-      const dateVal = form.querySelector('[name="learner_date"]')?.value ||
-                      form.querySelector('[name="training_date"]')?.value || '';
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
 
-      const trainerDataURL = trainerSigPad ? trainerSigPad.toDataURL() : '';
-      document.getElementById('trainer_signature_dataurl').value = trainerDataURL;
-      document.getElementById('trainer_signature_filename').value =
-        `trainer_signature_${slug(trainerName)}_${safeDate(dateVal)}.png`;
+    canvas.addEventListener('touchstart', start, {passive:false});
+    canvas.addEventListener('touchmove', move, {passive:false});
+    canvas.addEventListener('touchend', end);
 
-      // Build payload
-      const fd = new FormData(form);
-      const payload = Object.fromEntries(fd.entries());
+    clearBtn.addEventListener('click', () => resizeCanvas());
+  })();
 
-      try {
-        const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook/moving-handling-submit', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify(payload)
-        });
-        alert(res.ok ? 'Submitted – thank you!' : 'There was an issue submitting your form.');
-      } catch (err) {
-        alert('Network error submitting form.');
-      } finally {
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
-      }
-    });
+  function slugify(s) {
+    return (s || '').toString().trim().toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
+  // Submit → n8n (BLS)
+  document.getElementById('bls-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+    // Compute assessment_outcome_bool based on radio selection
+    const chosenOutcome = (new FormData(e.target)).get('outcome') || '';
+    document.getElementById('assessment_outcome_bool').value = (chosenOutcome === 'Pass') ? 'true' : 'false';
+
+    // Capture assessor signature -> hidden fields
+    const sigCanvas = document.getElementById('assessorSig');
+    // Convert to PNG data URL
+    const dataUrl = sigCanvas.toDataURL('image/png');
+    // Strip prefix to leave raw base64
+    const base64 = dataUrl.split(',')[1] || '';
+    const assessorName = document.getElementById('assessor_name').value || 'assessor';
+    const dateStr = document.getElementById('training_date').value || new Date().toISOString().slice(0,10);
+    const filename = `assessor_signature_${slugify(assessorName)}_${dateStr}.png`;
+    document.getElementById('assessor_signature_base64').value = base64;
+    document.getElementById('assessor_signature_filename').value = filename;
+
+    // Build payload
+    const fd = new FormData(e.target);
+    if (!fd.has('form_type')) fd.append('form_type', 'bls');
+    if (!fd.has('form_version')) fd.append('form_version', '2025-08-18');
+
+    // Promote to a plain object for JSON POST
+    const payload = Object.fromEntries(fd.entries());
+
+    try {
+      const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/bls-competency-submit', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      alert(res.ok ? 'Submitted – thank you!' : 'There was an issue submitting your form.');
+    } catch (err) {
+      alert('Network error submitting form.');
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
+    }
+  });
   </script>
+
 </body>
 </html>
