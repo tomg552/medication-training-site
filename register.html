@@ -113,8 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("mode", mode);
 
     const nextPage = mode === "assessor"
-      ? "assessor_menu.html"
-      : "menu.html";
+      ? "home.html"
+      : "home.html";
 
     window.location.href = `/medication-training-site/${nextPage}`;
   });
