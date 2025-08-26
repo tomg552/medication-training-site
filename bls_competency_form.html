@@ -341,7 +341,7 @@
     const payload = Object.fromEntries(fd.entries());
 
     try {
-      const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/bls-competency-submit', {
+      const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook/bls-competency-submit', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(payload)
