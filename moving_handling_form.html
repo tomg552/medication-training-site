@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Moving &amp; Handling – Delegate Self-Assessment</title>
+  <title>Moving &amp; Handling – Delegate Assessment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body style="background:#f0f4f8; font-family: Arial, sans-serif;">
   <div class="visit-card">
-    <div class="header">🧍 Moving &amp; Handling – Delegate Self-Assessment</div>
+    <div class="header">🧍 Moving &amp; Handling – Delegate Assessment</div>
 
     <form id="mh-form">
       <input type="hidden" name="form_type" value="moving_handling">
@@ -343,7 +343,7 @@
       const payload = Object.fromEntries(fd.entries());
 
       try {
-        const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/moving-handling-submit', {
+        const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook/moving-handling-submit', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify(payload)
