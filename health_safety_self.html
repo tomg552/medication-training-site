@@ -2,284 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Health &amp; Safety – Self-Assessment</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due Care for Participants Form</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body style="background:#f0f4f8; font-family: Arial, sans-serif;">
+<body>
   <div class="visit-card">
-    <div class="header">⚠️ Health &amp; Safety – Self-Assessment (Pre-Training)</div>
-
-    <form id="hs-form">
-      <!-- Session details (prefilled from start menu if used) -->
-      <input type="hidden" name="form_type" value="health_safety">
-      <input type="hidden" name="form_version" value="2025-08-18">
-
+    <form>
       <fieldset>
-        <legend>Session Details</legend>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem;">
-          <label>Assessor
-            <input id="assessor_name" name="assessor_name" type="text" placeholder="Assessor name">
-          </label>
-          <label>Date
-            <input id="training_date" name="training_date" type="date">
-          </label>
-          <label>Venue
-            <input id="venue" name="venue" type="text" placeholder="Training venue / hub">
-          </label>
-        </div>
+        <legend>Medical Information & Additional Learning Requirements</legend>
+
+        <label for="course">Course:</label>
+        <input type="text" id="course" name="course">
+
+        <p>
+          The trainer MUST be made aware of any medical conditions which may affect your ability 
+          to carry out the practical tasks on this course.
+        </p>
+
+        <label for="health_issues">
+          Please list below any health or physical problems that prevent you from taking part in 
+          any physical aspects of the training (e.g. respiratory conditions, injuries, disability, 
+          pregnancy, allergies, or anything that could prevent safe completion of the course):
+        </label>
+        <textarea id="health_issues" name="health_issues"></textarea>
+
+        <label for="learning_requirements">
+          Do you have any additional learning requirements? If yes, please list below, including 
+          any additional resources you may require:
+        </label>
+        <textarea id="learning_requirements" name="learning_requirements"></textarea>
+
+        <p>
+          If you wish to discuss any matters in private, please make the trainer aware.  
+          We also ask that you report any injuries to the trainer immediately.
+        </p>
       </fieldset>
 
-      <!-- Learner details -->
       <fieldset>
         <legend>Learner Details</legend>
-        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: .75rem;">
-          <label>Name
-            <input name="learner_name" type="text" required>
-          </label>
-          <label>Date
-            <input name="learner_date" type="date" required>
-          </label>
-          <label>Hub / Branch
-            <input name="hub" type="text" required>
-          </label>
-          <label>Role
-            <input name="role" type="text" placeholder="e.g., Support Worker" required>
-          </label>
-        </div>
+        <label for="learner_name">Learner Name:</label>
+        <input type="text" id="learner_name" name="learner_name">
+
+        <label for="learner_signature">Learner Signature:</label>
+        <input type="text" id="learner_signature" name="learner_signature">
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date">
       </fieldset>
 
-      <!-- Instructions -->
       <fieldset>
-        <legend>Instructions</legend>
-        <p>Please complete this self-assessment <em>before</em> training. Answer each item as <strong>Yes</strong>, <strong>No</strong>, or <strong>N/A</strong>. If you select <strong>No</strong>, briefly describe any actions needed.</p>
-      </fieldset>
+        <legend>Trainer Comments</legend>
+        <textarea id="trainer_comments" name="trainer_comments"></textarea>
 
-      <!-- Checklist table -->
-      <fieldset>
-        <legend>Checklist</legend>
-        <table>
-          <thead>
-            <tr>
-              <th style="width:40%;">Area / Topic</th>
-              <th style="width:35%;">Question</th>
-              <th style="width:10%;">Y / N / N/A</th>
-              <th style="width:15%;">Action Required (if No)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Work Environment & DSE -->
-            <tr>
-              <td rowspan="3"><strong>Work Environment & DSE</strong></td>
-              <td>My workstation/chair can be set for a neutral posture (screen at eye-level, forearms level).</td>
-              <td>
-                <select name="dse_posture" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="dse_posture_action"></td>
-            </tr>
-            <tr>
-              <td>My screen is clear/readable and free from glare/reflection.</td>
-              <td>
-                <select name="dse_glare" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="dse_glare_action"></td>
-            </tr>
-            <tr>
-              <td>I take regular breaks and vary tasks to reduce strain.</td>
-              <td>
-                <select name="dse_breaks" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="dse_breaks_action"></td>
-            </tr>
+        <label for="trainer_name">Trainer Name:</label>
+        <input type="text" id="trainer_name" name="trainer_name">
 
-            <!-- Manual Handling -->
-            <tr>
-              <td rowspan="3"><strong>Manual Handling</strong></td>
-              <td>I understand safe lifting techniques and know when to seek assistance or equipment.</td>
-              <td>
-                <select name="mh_techniques" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="mh_techniques_action"></td>
-            </tr>
-            <tr>
-              <td>I use issued equipment (e.g., slide sheets, hoists) correctly and within my competency.</td>
-              <td>
-                <select name="mh_equipment_use" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="mh_equipment_use_action"></td>
-            </tr>
-            <tr>
-              <td>I report defects or issues with equipment immediately.</td>
-              <td>
-                <select name="mh_report_defects" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="mh_report_defects_action"></td>
-            </tr>
-
-            <!-- Infection Prevention & Control -->
-            <tr>
-              <td rowspan="3"><strong>Infection Prevention & Control</strong></td>
-              <td>I perform hand hygiene at the required points of care.</td>
-              <td>
-                <select name="ipc_hand_hygiene" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="ipc_hand_hygiene_action"></td>
-            </tr>
-            <tr>
-              <td>I wear appropriate PPE correctly and dispose of it safely.</td>
-              <td>
-                <select name="ipc_ppe" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="ipc_ppe_action"></td>
-            </tr>
-            <tr>
-              <td>I follow standard precautions and escalate concerns about infection risks.</td>
-              <td>
-                <select name="ipc_precautions" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="ipc_precautions_action"></td>
-            </tr>
-
-            <!-- Fire Safety -->
-            <tr>
-              <td rowspan="3"><strong>Fire Safety</strong></td>
-              <td>I know the local fire procedures, alarm points, and evacuation routes.</td>
-              <td>
-                <select name="fire_procedure" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="fire_procedure_action"></td>
-            </tr>
-            <tr>
-              <td>I can identify fire risks and act to reduce them in client homes/facilities.</td>
-              <td>
-                <select name="fire_risks" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="fire_risks_action"></td>
-            </tr>
-            <tr>
-              <td>I would raise the alarm and evacuate safely if needed.</td>
-              <td>
-                <select name="fire_evacuate" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="fire_evacuate_action"></td>
-            </tr>
-
-            <!-- Lone Working & Driving -->
-            <tr>
-              <td rowspan="3"><strong>Lone Working & Driving</strong></td>
-              <td>I follow lone-working procedures and keep my whereabouts known.</td>
-              <td>
-                <select name="lone_procedure" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="lone_procedure_action"></td>
-            </tr>
-            <tr>
-              <td>If I drive for work, my vehicle is roadworthy, insured, and I take rest breaks.</td>
-              <td>
-                <select name="drive_roadworthy" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="drive_roadworthy_action"></td>
-            </tr>
-            <tr>
-              <td>I know how to de-escalate and remove myself from unsafe situations.</td>
-              <td>
-                <select name="lone_deescalate" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="lone_deescalate_action"></td>
-            </tr>
-
-            <!-- Incident Reporting & Medication Safety -->
-            <tr>
-              <td rowspan="3"><strong>Reporting & Medication Safety</strong></td>
-              <td>I know how to report incidents/near misses and who to inform.</td>
-              <td>
-                <select name="report_incidents" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="report_incidents_action"></td>
-            </tr>
-            <tr>
-              <td>I understand the limits of my role regarding medicines and when to escalate.</td>
-              <td>
-                <select name="meds_limits" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="meds_limits_action"></td>
-            </tr>
-            <tr>
-              <td>I know where to find policies/procedures and have read the H&amp;S policy.</td>
-              <td>
-                <select name="read_policies" required>
-                  <option value=""></option><option>Yes</option><option>No</option><option>N/A</option>
-                </select>
-              </td>
-              <td><input type="text" name="read_policies_action"></td>
-            </tr>
-          </tbody>
-        </table>
-      </fieldset>
-
-      <!-- Additional comments -->
-      <fieldset>
-        <legend>Additional Comments</legend>
-        <textarea name="additional_comments" rows="6" placeholder="Anything else we should know about your health &amp; safety needs before training?"></textarea>
-      </fieldset>
-
-      <!-- Declarations -->
-      <fieldset>
-        <legend>Declarations</legend>
-        <label>
-          <input type="checkbox" name="declare_true" required> I confirm the above answers are true to the best of my knowledge.
-        </label>
-        <label>
-          <input type="checkbox" name="declare_fit" required> I am fit to undertake training today. If anything changes I will inform the trainer.
-        </label>
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: .75rem; margin-top: .75rem;">
-          <label>Name (learner)
-            <input name="declaration_name" type="text" required>
-          </label>
-          <label>Date
-            <input name="declaration_date" type="date" required>
-          </label>
-        </div>
-      </fieldset>
-
-      <!-- Summary (auto-calculated on the client) -->
-      <fieldset>
-        <legend>Summary</legend>
-        <p><strong>Items marked &quot;No&quot;</strong>: <span id="noCount">0</span>. Please ensure actions are captured above and discuss with your trainer if needed.</p>
+        <label for="trainer_signature">Trainer Signature:</label>
+        <input type="text" id="trainer_signature" name="trainer_signature">
       </fieldset>
 
       <div class="buttons">
@@ -287,60 +66,5 @@
       </div>
     </form>
   </div>
-
- <script>
-  // Prefill session details from localStorage (if saved on the start page)
-  (function () {
-    const a = localStorage.getItem('assessor_name') || '';
-    const d = localStorage.getItem('training_date') || '';
-    const v = localStorage.getItem('venue') || '';
-    if (a) document.getElementById('assessor_name').value = a;
-    if (d) document.getElementById('training_date').value = d;
-    if (v) document.getElementById('venue').value = v;
-  })();
-
-  // Count No answers for simple risk summary
-  function updateNoCount() {
-    const selects = document.querySelectorAll('tbody select');
-    let count = 0;
-    selects.forEach(s => { if (s.value === 'No') count++; });
-    const el = document.getElementById('noCount');
-    if (el) el.textContent = count;
-    return count;
-  }
-  document.addEventListener('change', (e) => {
-    if (e.target.tagName === 'SELECT') updateNoCount();
-  });
-  // Initialize on load so 0 shows immediately
-  document.addEventListener('DOMContentLoaded', updateNoCount);
-
-  // Real submit → n8n webhook
-  document.getElementById('hs-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Ensure we capture the latest "No" count
-    const noCount = updateNoCount();
-
-    const fd = new FormData(e.target);
-    // Include no_count (and form identity/version if not already in hidden inputs)
-    if (!fd.has('no_count')) fd.append('no_count', String(noCount));
-    if (!fd.has('form_type')) fd.append('form_type', 'health_safety');
-    if (!fd.has('form_version')) fd.append('form_version', '2025-08-18');
-
-    const payload = Object.fromEntries(fd.entries());
-
-    try {
-      const res = await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/hs-self-submit', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-      alert(res.ok ? 'Submitted – thank you!' : 'There was an issue submitting your form.');
-    } catch (err) {
-      alert('Network error submitting form.');
-    }
-  });
-</script>
-
 </body>
 </html>
