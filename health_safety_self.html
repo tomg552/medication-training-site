@@ -8,7 +8,10 @@
 </head>
 <body>
   <div class="visit-card">
-    <form id="dueCareForm">
+    <form id="dueCareForm"
+          action="https://YOUR-N8N-DOMAIN/webhook/your-workflow-id"
+          method="post"
+          enctype="multipart/form-data">
       <!-- ===== Session & Participant Details (TOP) ===== -->
       <fieldset>
         <legend>Session & Participant Details</legend>
@@ -67,16 +70,21 @@
         <legend>Signature</legend>
 
         <!-- Trainer Signature -->
-        <label> Trainer Signature </label>
+        <label>Trainer Signature</label>
         <div style="border:1px solid #ccc; border-radius:6px; padding:0.5rem;">
           <canvas id="sig_trainer" width="600" height="140" style="width:100%; height:140px;"></canvas>
           <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
             <button type="button" id="clear_trainer">Clear</button>
           </div>
         </div>
-        <input type="hidden" name="trainer_signature_png" id="trainer_signature_png" />
 
-        <!-- Repeated names/dates near signatures (optional but often useful on PDFs) -->
+        <!-- Data URL (PNG) captured from canvas -->
+        <input type="hidden" name="trainer_signature_png" id="trainer_signature_png" />
+        <!-- Extra fields for n8n Convert to File -->
+        <input type="hidden" name="fileName" id="signature_file_name" />
+        <input type="hidden" name="base64" id="trainer_signature_base64" />
+
+        <!-- Repeated names/dates near signatures -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
           <div>
             <label for="learner_name_confirm">Learner Name (confirm)</label>
@@ -92,6 +100,10 @@
           </div>
         </div>
       </fieldset>
+
+      <!-- Optional: form metadata helpful in your n8n mapper -->
+      <input type="hidden" name="form_type" value="due_care_medical_learning_needs" />
+      <input type="hidden" name="form_version" value="v1" />
 
       <div class="buttons">
         <button type="submit">Submit</button>
@@ -113,7 +125,7 @@
 
       setVal("learner_name", assessee);
       setVal("trainer_name_top", assessor);
-      setVal("course", get("course")); // optional if you store it elsewhere
+      setVal("course", get("course"));
       setVal("venue", venueVal);
       setVal("date_top", sessionDate);
 
@@ -123,7 +135,7 @@
       setVal("date_bottom", sessionDate);
     });
 
-    // ---- Lightweight signature pads (no external libs) ----
+    // ---- Lightweight signature pad (no external libs) ----
     function makeSigPad(canvasId, clearBtnId, hiddenFieldId) {
       const canvas = document.getElementById(canvasId);
       const clearBtn = document.getElementById(clearBtnId);
@@ -174,18 +186,25 @@
       });
     }
 
+    // Only the trainer signature is present in this markup—so we init just that one.
     document.addEventListener("DOMContentLoaded", () => {
-      makeSigPad("sig_learner", "clear_learner", "learner_signature_png");
       makeSigPad("sig_trainer", "clear_trainer", "trainer_signature_png");
     });
 
-    // ---- Ensure signatures are captured before submit (PNG base64) ----
+    // ---- Before submit: derive fields for n8n ConvertToFile ----
     document.getElementById("dueCareForm").addEventListener("submit", (e) => {
-      // If needed, enforce that at least learner signature is present:
-      // if (!document.getElementById("learner_signature_png").value) {
-      //   e.preventDefault();
-      //   alert("Please provide the learner's signature before submitting.");
-      // }
+      // Ensure trainer PNG data URL exists if anything was drawn.
+      const dataUrl = document.getElementById("trainer_signature_png").value || "";
+      // Strip "data:image/png;base64," → ConvertToFile often expects raw base64
+      const base64Only = dataUrl.replace(/^data:image\/png;base64,/, "");
+      document.getElementById("trainer_signature_base64").value = base64Only;
+
+      // Give SharePoint / n8n a sensible filename
+      const fileName = `signature-${Date.now()}.png`;
+      document.getElementById("signature_file_name").value = fileName;
+
+      // If you want to require a signature, uncomment:
+      // if (!base64Only) { e.preventDefault(); alert("Please add the trainer's signature."); }
     });
   </script>
 </body>
