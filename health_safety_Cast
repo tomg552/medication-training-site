@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Due Care: Medical & Learning Needs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* small niceties */
+    .success {
+      display:none; margin-top:0.75rem; padding:0.75rem;
+      border-radius:8px; background:#e9f9ee; border:1px solid #b6efc3;
+    }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media (max-width: 700px) { .grid-2 { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="visit-card">
+    <form id="dueCareForm" enctype="multipart/form-data" novalidate>
+      <!-- ===== Session & Participant Details (TOP) ===== -->
+      <fieldset>
+        <legend>Session & Participant Details</legend>
+
+        <label for="session_id">Session ID / Name</label>
+        <input type="text" id="session_id" name="session_id" placeholder="e.g. 2025-08-28 AM – Manchester" required />
+
+        <label for="learner_name">Learner Name</label>
+        <input type="text" id="learner_name" name="learner_name" />
+
+        <label for="trainer_name_top">Trainer Name</label>
+        <input type="text" id="trainer_name_top" name="trainer_name" />
+
+        <label for="course">Course</label>
+        <input type="text" id="course" name="course" />
+
+        <label for="venue">Venue</label>
+        <input type="text" id="venue" name="venue" />
+
+        <label for="date_top">Date</label>
+        <input type="date" id="date_top" name="date" />
+      </fieldset>
+
+      <!-- ===== Main Form Content ===== -->
+      <fieldset>
+        <legend>Medical Information & Additional Learning Requirements</legend>
+
+        <p>
+          The trainer MUST be made aware of any medical conditions which may affect your ability
+          to carry out the practical tasks on this course.
+        </p>
+
+        <label for="health_issues">
+          Please list any health or physical problems that could affect safe participation
+          (e.g. respiratory conditions; old/current injuries of concern; any disability affecting
+          safe completion; pregnancy or postnatal stages; allergies; or any other relevant issue).
+        </label>
+        <textarea id="health_issues" name="health_issues"></textarea>
+
+        <label for="learning_requirements">
+          Do you have any additional learning requirements? If yes, list them here (including any
+          additional resources or adjustments you may require).
+        </label>
+        <textarea id="learning_requirements" name="learning_requirements"></textarea>
+
+        <p>
+          If you wish to discuss any matters in private, please make the trainer aware.
+          Please report any injuries to the trainer immediately.
+        </p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Trainer Comments</legend>
+        <textarea id="trainer_comments" name="trainer_comments"></textarea>
+      </fieldset>
+
+      <!-- ===== Signatures (BOTTOM) ===== -->
+      <fieldset>
+        <legend>Signature</legend>
+
+        <!-- Trainer Signature -->
+        <label>Trainer Signature</label>
+        <div style="border:1px solid #ccc; border-radius:6px; padding:0.5rem;">
+          <!-- Note: width/height set via JS for HiDPI scaling -->
+          <canvas id="sig_trainer" style="width:100%; height:140px; touch-action: none;"></canvas>
+          <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+            <button type="button" id="clear_trainer">Clear</button>
+          </div>
+        </div>
+
+        <!-- Data URL (PNG) captured from canvas -->
+        <input type="hidden" name="trainer_signature_png" id="trainer_signature_png" />
+        <!-- Extra fields for legacy n8n Convert to File (kept harmlessly) -->
+        <input type="hidden" name="fileName" id="signature_file_name" />
+        <input type="hidden" name="base64" id="trainer_signature_base64" />
+
+        <!-- Repeated names/dates near signatures -->
+        <div class="grid-2" style="margin-top:1rem;">
+          <div>
+            <label for="learner_name_confirm">Learner Name (confirm)</label>
+            <input type="text" id="learner_name_confirm" name="learner_name_confirm" />
+          </div>
+          <div>
+            <label for="trainer_name_confirm">Trainer Name (confirm)</label>
+            <input type="text" id="trainer_name_confirm" name="trainer_name_confirm" />
+          </div>
+          <div>
+            <label for="date_bottom">Date (confirm)</label>
+            <input type="date" id="date_bottom" name="date_confirm" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Optional: form metadata -->
+      <input type="hidden" name="form_type" value="due_care_medical_learning_needs" />
+      <input type="hidden" name="form_version" value="v1" />
+
+      <div class="buttons">
+        <button type="submit">Submit</button>
+      </div>
+      <div id="success" class="success">Saved! This entry is now available to your dashboard.</div>
+    </form>
+  </div>
+
+  <script>
+    // ---------- Local storage helpers ----------
+    const STORAGE_KEY = 'hs_submissions'; // shared with dashboard
+    const bc = ('BroadcastChannel' in self) ? new BroadcastChannel('hs_submissions') : null;
+    const getAll = () => {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+    };
+    const setAll = (arr) => localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    const pushItem = (doc) => {
+      const all = getAll(); all.push(doc); setAll(all);
+      if (bc) bc.postMessage({ type: 'add', payload: doc });
+    };
+
+    // ---------- Prefill from localStorage (consistent with your other pages) ----------
+    document.addEventListener("DOMContentLoaded", () => {
+      const get = (k) => localStorage.getItem(k) || "";
+
+      const assessee = get("assessee_name");  // learner
+      const assessor = get("assessor_name");  // trainer
+      const venueVal = get("venue");
+      const sessionDate = get("session_date"); // yyyy-mm-dd preferred
+      const sessionId = get("session_id");
+
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el && !el.value && val) el.value = val; };
+
+      setVal("session_id", sessionId);
+      setVal("learner_name", assessee);
+      setVal("trainer_name_top", assessor);
+      setVal("course", get("course"));
+      setVal("venue", venueVal);
+      setVal("date_top", sessionDate);
+
+      // Mirror to bottom confirmations
+      setVal("learner_name_confirm", assessee);
+      setVal("trainer_name_confirm", assessor);
+      setVal("date_bottom", sessionDate);
+    });
+
+    // ---------- Signature pad with Pointer Events + HiDPI fix ----------
+    function setupHiDPI(canvas) {
+      const dpr = Math.max(window.devicePixelRatio || 1, 1);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#111';
+      return ctx;
+    }
+
+    function makeSigPad(canvasId, clearBtnId, hiddenFieldId) {
+      const canvas = document.getElementById(canvasId);
+      const clearBtn = document.getElementById(clearBtnId);
+      const hidden = document.getElementById(hiddenFieldId);
+
+      let ctx = setupHiDPI(canvas);
+      let drawing = false;
+      let last = null;
+
+      const getPos = (evt) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = (evt.clientX ?? 0) - rect.left;
+        const y = (evt.clientY ?? 0) - rect.top;
+        return { x, y };
+      };
+
+      const start = (evt) => { drawing = true; last = getPos(evt); evt.preventDefault(); };
+      const move  = (evt) => {
+        if (!drawing) return;
+        const p = getPos(evt);
+        ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+        last = p;
+        evt.preventDefault();
+      };
+      const end   = () => {
+        drawing = false;
+        // Export at display-res (dataURL accounts for DPR correctly)
+        hidden.value = canvas.toDataURL("image/png");
+      };
+
+      // Resize awareness
+      let resizeTimer; 
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          // keep drawn content? simplest: clear on resize to avoid distortion
+          ctx = setupHiDPI(canvas);
+          hidden.value = "";
+        }, 150);
+      });
+
+      // Pointer events unify mouse/touch/pen
+      canvas.addEventListener('pointerdown', start);
+      canvas.addEventListener('pointermove', move);
+      canvas.addEventListener('pointerup', end);
+      canvas.addEventListener('pointerleave', end);
+      canvas.addEventListener('pointercancel', end);
+
+      clearBtn.addEventListener("click", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hidden.value = "";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      makeSigPad("sig_trainer", "clear_trainer", "trainer_signature_png");
+    });
+
+    // ---------- Submit: save locally & broadcast ----------
+    document.getElementById("dueCareForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const success = document.getElementById('success');
+
+      // Gather data
+      const data = {
+        timestamp: new Date().toISOString(),
+        form_type: "due_care_medical_learning_needs",
+        form_version: "v1",
+
+        // session / header
+        session_id: document.getElementById("session_id").value || "",
+        learner_name: document.getElementById("learner_name").value || "",
+        trainer_name: document.getElementById("trainer_name_top").value || "",
+        course: document.getElementById("course").value || "",
+        venue: document.getElementById("venue").value || "",
+        date: document.getElementById("date_top").value || "",
+
+        // body
+        health_issues: document.getElementById("health_issues").value || "",
+        learning_requirements: document.getElementById("learning_requirements").value || "",
+        trainer_comments: document.getElementById("trainer_comments").value || "",
+
+        // signature
+        trainer_signature_png: document.getElementById("trainer_signature_png").value || "",
+        has_signature: (document.getElementById("trainer_signature_png").value || "").length > 0,
+
+        // confirms (optional duplicates)
+        learner_name_confirm: document.getElementById("learner_name_confirm").value || "",
+        trainer_name_confirm: document.getElementById("trainer_name_confirm").value || "",
+        date_confirm: document.getElementById("date_bottom").value || ""
+      };
+
+      // Legacy n8n helpers (harmless to keep)
+      const dataUrl = data.trainer_signature_png || "";
+      const base64Only = dataUrl.replace(/^data:image\/png;base64,/, "");
+      document.getElementById("trainer_signature_base64").value = base64Only;
+      document.getElementById("signature_file_name").value = `signature-${Date.now()}.png`;
+
+      // Persist convenience values for future pages
+      localStorage.setItem('session_id', data.session_id || '');
+      localStorage.setItem('assessor_name', data.trainer_name || '');
+      localStorage.setItem('assessee_name', data.learner_name || '');
+      localStorage.setItem('venue', data.venue || '');
+      localStorage.setItem('session_date', data.date || '');
+      if (data.course) localStorage.setItem('course', data.course);
+
+      // Save locally & broadcast to dashboards
+      pushItem(data);
+
+      // UI feedback
+      success.style.display = 'block';
+      setTimeout(() => { success.style.display = 'none'; }, 2500);
+
+      // If you prefer to keep inputs, remove this reset:
+      // e.target.reset();
+      // Restore key fields after reset (uncomment if you choose to reset):
+      // document.getElementById("session_id").value = localStorage.getItem("session_id") || "";
+      // document.getElementById("trainer_name_top").value = localStorage.getItem("assessor_name") || "";
+      // document.getElementById("learner_name").value = localStorage.getItem("assessee_name") || "";
+      // document.getElementById("venue").value = localStorage.getItem("venue") || "";
+      // document.getElementById("date_top").value = localStorage.getItem("session_date") || "";
+    });
+  </script>
+</body>
+</html>
