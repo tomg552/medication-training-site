@@ -283,5 +283,100 @@
       // document.getElementById("date_top").value = localStorage.getItem("session_date") || "";
     });
   </script>
+  <script>
+  // Optional: redirect to dashboard after save?
+  const REDIRECT_AFTER_SAVE = true; // set false if you prefer to stay on the form
+  const DASHBOARD_URL = "hs_dashboard.html"; // adjust path if needed
+</script>
+
+<script type="module">
+  import { initRealtime, submitHS } from './hs_realtime.js';
+
+  const STORAGE_KEYS = {
+    session: 'session_id',
+    assessor: 'assessor_name',
+    assessee: 'assessee_name',
+    venue: 'venue',
+    date: 'session_date',
+    course: 'course',
+  };
+
+  function val(id){ const el=document.getElementById(id); return el?el.value.trim():""; }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const form = document.getElementById('dueCareForm');
+    const success = document.getElementById('success') || Object.assign(document.createElement('div'), { id:'success' });
+
+    // attach success toast if missing
+    if (!success.parentNode) {
+      success.className = 'success';
+      success.textContent = 'Saved! This entry is now available to your dashboard.';
+      form.appendChild(success);
+    }
+
+    const realtime = await initRealtime({ ENABLE_FIREBASE: false, FIREBASE_CONFIG: {} });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // capture signature base64 (if present)
+      const dataUrl = val('trainer_signature_png');
+      const base64Only = dataUrl.replace(/^data:image\/png;base64,/, '');
+      const fileName = `signature-${Date.now()}.png`;
+      const hasSignature = !!base64Only;
+
+      const payload = {
+        timestamp: new Date().toISOString(),
+        form_type: "due_care_medical_learning_needs",
+        form_version: "v1",
+
+        session_id: val('session_id'),
+        learner_name: val('learner_name'),
+        trainer_name: val('trainer_name_top'),
+        course: val('course'),
+        venue: val('venue'),
+        date: val('date_top'),
+
+        health_issues: val('health_issues'),
+        learning_requirements: val('learning_requirements'),
+        trainer_comments: val('trainer_comments'),
+
+        trainer_signature_png: dataUrl,
+        has_signature: hasSignature,
+
+        learner_name_confirm: val('learner_name_confirm'),
+        trainer_name_confirm: val('trainer_name_confirm'),
+        date_confirm: val('date_bottom'),
+      };
+
+      // persist convenience values
+      if (payload.session_id) localStorage.setItem(STORAGE_KEYS.session, payload.session_id);
+      if (payload.trainer_name) localStorage.setItem(STORAGE_KEYS.assessor, payload.trainer_name);
+      if (payload.learner_name) localStorage.setItem(STORAGE_KEYS.assessee, payload.learner_name);
+      if (payload.venue) localStorage.setItem(STORAGE_KEYS.venue, payload.venue);
+      if (payload.date) localStorage.setItem(STORAGE_KEYS.date, payload.date);
+      if (payload.course) localStorage.setItem(STORAGE_KEYS.course, payload.course);
+
+      // legacy hidden fields (harmless if present)
+      const base64El = document.getElementById('trainer_signature_base64');
+      const fnameEl = document.getElementById('signature_file_name');
+      if (base64El) base64El.value = base64Only;
+      if (fnameEl) fnameEl.value = fileName;
+
+      // save locally (and broadcast to dashboard)
+      await submitHS(realtime, payload);
+
+      // toast
+      success.style.display = 'block';
+      setTimeout(() => success.style.display = 'none', 2000);
+
+      if (REDIRECT_AFTER_SAVE) {
+        const withSession = payload.session_id ? `?session=${encodeURIComponent(payload.session_id)}` : '';
+        window.location.href = `${DASHBOARD_URL}${withSession}`;
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
