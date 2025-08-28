@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pre‑Session Health & Safety Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: #f5f9fc; }
+    .visit-card { max-width: 1100px; margin: 2rem auto; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1rem 0; }
+    .kpis .card { background: #fff; padding: 1rem; border-radius: 12px; box-shadow: 0 0 12px rgba(0,0,0,0.05); }
+    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .kpis { grid-template-columns: 1fr; } }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.6rem; border-bottom: 1px solid #e7eef6; text-align: left; }
+    th { background: #e6f0f8; position: sticky; top: 0; z-index: 1; }
+    .pill { padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.85rem; }
+    .ok { background: #e9f9ee; border: 1px solid #b6efc3; }
+    .warn { background: #fff3cd; border: 1px solid #ffe69c; }
+    .bad { background: #fde8e8; border: 1px solid #f5b5b5; }
+    .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+    .muted { color: #5c6f82; }
+  </style>
+  <!-- Optional Firebase config (must match form if enabled) -->
+  <script>
+    const ENABLE_FIREBASE = false; // set true after adding config
+    const FIREBASE_CONFIG = {
+      // apiKey: "YOUR_KEY",
+      // authDomain: "YOUR_DOMAIN",
+      // databaseURL: "https://YOUR_DB_URL",
+      // projectId: "YOUR_ID",
+      // storageBucket: "YOUR_BUCKET",
+      // messagingSenderId: "YOUR_SENDER_ID",
+      // appId: "YOUR_APP_ID"
+    };
+  </script>
+  <script type="module">
+    import { initRealtime } from './hs_realtime.js';
+    const fmt = (s) => (s ?? '').toString();
+    let items = [];
+    let currentSession = '';
+
+    function computeKpis(rows) {
+      const count = rows.length;
+      const yes = (k) => rows.filter(r => fmt(r[k]).toLowerCase() === 'yes').length;
+      const room_ra = yes('room_ra_complete');
+      const exits = yes('exits_briefed');
+      const firstAid = yes('first_aid_confirmed');
+      const incident = yes('incident_process_explained');
+      return { count, room_ra, exits, firstAid, incident };
+    }
+
+    function render(rows) {
+      const tbody = document.querySelector('#tbl tbody');
+      tbody.innerHTML = rows.map(r => {
+        const ok = (v) => fmt(v).toLowerCase() === 'yes' ? '<span class="pill ok">Yes</span>' :
+                           fmt(v).toLowerCase() === 'no' ? '<span class="pill bad">No</span>' : '<span class="pill warn">—</span>';
+        return `<tr>
+          <td>${fmt(r.timestamp).replace('T',' ').replace('Z','')}</td>
+          <td>${fmt(r.trainer_name)}</td>
+          <td>${fmt(r.venue)}</td>
+          <td>${ok(r.room_ra_complete)}</td>
+          <td>${ok(r.exits_briefed)}</td>
+          <td>${ok(r.first_aid_confirmed)}</td>
+          <td>${ok(r.incident_process_explained)}</td>
+          <td>${(fmt(r.notes) || '&nbsp;')}</td>
+        </tr>`;
+      }).join('');
+
+      const k = computeKpis(rows);
+      document.getElementById('k_count').textContent = k.count;
+      document.getElementById('k_room').textContent = k.room_ra;
+      document.getElementById('k_exits').textContent = k.exits;
+      document.getElementById('k_first').textContent = k.firstAid;
+      document.getElementById('k_incident').textContent = k.incident;
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('q')?.value || '').toLowerCase();
+      const filtered = items.filter(r => (!currentSession || r.session_id === currentSession) &&
+        (q === '' || JSON.stringify(r).toLowerCase().includes(q)));
+      render(filtered.sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||'')));
+    }
+
+    async function exportCsv(rows) {
+      const headers = ['timestamp','session_id','venue','trainer_name','room_ra_complete','exits_briefed','first_aid_confirmed','incident_process_explained','notes'];
+      const esc = (v) => `"${(v ?? '').toString().replace(/"/g,'""')}"`;
+      const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => esc(r[h])).join(','))).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), { href: url, download: `hs_dashboard_${(currentSession||'all').replace(/\W+/g,'_')}.csv` });
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const realtime = await initRealtime({ ENABLE_FIREBASE, FIREBASE_CONFIG });
+
+      // derive session list from local data first
+      if (realtime.loadAll) {
+        const snap = await realtime.loadAll();
+        items = snap.items || [];
+      }
+
+      // session select
+      const sel = document.getElementById('session');
+      const knownSessions = Array.from(new Set(items.map(i => i.session_id).filter(Boolean))).sort();
+      sel.innerHTML = '<option value="">All sessions</option>' + knownSessions.map(s => `<option>${s}</option>`).join('');
+      // preferred: last used
+      const lastSession = localStorage.getItem('session_id') || '';
+      if (lastSession && knownSessions.includes(lastSession)) {
+        sel.value = lastSession; currentSession = lastSession;
+      }
+
+      sel.addEventListener('change', () => { currentSession = sel.value; applyFilters(); });
+      document.getElementById('q').addEventListener('input', applyFilters);
+      document.getElementById('export').addEventListener('click', () => exportCsv(items.filter(r => !currentSession || r.session_id === currentSession)));
+
+      // live stream
+      realtime.bindSession('', (doc) => {
+        items.push(doc);
+        // keep session dropdown fresh
+        if (doc.session_id && !Array.from(sel.options).some(o => o.value === doc.session_id)) {
+          const opt = document.createElement('option'); opt.value = opt.textContent = doc.session_id; sel.appendChild(opt);
+        }
+        applyFilters();
+      });
+
+      applyFilters();
+    });
+  </script>
+</head>
+<body>
+  <div class="visit-card">
+    <h2>Pre‑Session Health &amp; Safety Dashboard</h2>
+    <p class="muted">Live view of all submitted health &amp; safety checks. Works offline with localStorage; turn on Firebase in both files for realtime across devices.</p>
+
+    <div class="controls" style="margin: 0.5rem 0 1rem;">
+      <label for="session">Session:</label>
+      <select id="session"></select>
+      <input id="q" type="search" placeholder="Search…" />
+      <button id="export" class="secondary">Export CSV</button>
+    </div>
+
+    <div class="kpis">
+      <div class="card"><div class="muted">Submissions</div><div id="k_count" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">Room RA: Yes</div><div id="k_room" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">Exits Briefed: Yes</div><div id="k_exits" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">First Aid Confirmed: Yes</div><div id="k_first" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">Incident Process Explained: Yes</div><div id="k_incident" style="font-size:1.6rem;font-weight:700;">0</div></div>
+    </div>
+
+    <div class="card" style="background:#fff; padding:1rem; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,0.05);">
+      <div style="max-height: 55vh; overflow: auto;">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>Submitted</th>
+              <th>Trainer</th>
+              <th>Venue</th>
+              <th>Room RA</th>
+              <th>Exits Briefed</th>
+              <th>First Aid</th>
+              <th>Incident Process</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
