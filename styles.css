@@ -130,11 +130,65 @@ body.assessor-mode {
   background-color: #fff7eb;
 }
 
-/* Extendable to other containers too */
 .container.assessee-mode {
   background-color: #ffffff;
 }
 
 .container.assessor-mode {
   background-color: #fff7eb;
+}
+
+/* === Global Brand Bar (auto header on all pages) === */
+:root {
+  --brand-h: 72px; /* header height */
+  --brand-pad: 20px;
+  --brand-bg: #ffffff;
+  --brand-border: #e5e7eb;
+  --brand-logo: url("routes-logo.png"); /* <-- update path */
+}
+
+/* Push content below brand bar */
+html, body {
+  padding-top: calc(var(--brand-h) + 12px);
+}
+
+/* Fixed brand header */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--brand-h);
+  background:
+    var(--brand-logo) no-repeat left var(--brand-pad) center /
+      auto calc(var(--brand-h) - 2*var(--brand-pad)),
+    linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
+  background-color: var(--brand-bg);
+  border-bottom: 1px solid var(--brand-border);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* Optional faint corner watermark */
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 16px; right: 16px;
+  width: 140px; height: 40px;
+  background: var(--brand-logo) no-repeat center / contain;
+  opacity: 0.08;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Print styling: logo only at top */
+@media print {
+  html, body { padding-top: var(--brand-h); }
+  body::after { display: none; }
+  body::before {
+    background:
+      var(--brand-logo) no-repeat left 0.5cm center / auto 1.2cm,
+      none;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+  }
 }
