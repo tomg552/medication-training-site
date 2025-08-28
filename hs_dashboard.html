@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pre‑Session Health & Safety Dashboard</title>
+  <title>Pre-Session Health & Safety Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
     body { background: #f5f9fc; }
@@ -14,142 +13,45 @@
     @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .kpis { grid-template-columns: 1fr; } }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.6rem; border-bottom: 1px solid #e7eef6; text-align: left; }
+    th, td { padding: 0.6rem; border-bottom: 1px solid #e7eef6; text-align: left; vertical-align: top; }
     th { background: #e6f0f8; position: sticky; top: 0; z-index: 1; }
-    .pill { padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.85rem; }
+    .pill { padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.85rem; display:inline-block; }
     .ok { background: #e9f9ee; border: 1px solid #b6efc3; }
     .warn { background: #fff3cd; border: 1px solid #ffe69c; }
     .bad { background: #fde8e8; border: 1px solid #f5b5b5; }
     .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
     .muted { color: #5c6f82; }
+
+    /* modal */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; padding: 1rem; }
+    .modal { max-width: 800px; width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+    .modal header { padding: 1rem 1.25rem; border-bottom: 1px solid #e7eef6; font-weight: 700; }
+    .modal .content { padding: 1rem 1.25rem; max-height: 70vh; overflow: auto; }
+    .modal .actions { padding: 1rem 1.25rem; border-top: 1px solid #e7eef6; text-align: right; }
+    .kv { display:grid; grid-template-columns: 180px 1fr; gap: 0.5rem 1rem; }
+    .kv div:nth-child(odd) { font-weight: 700; color: #3d556b; }
+    .textarea-view { white-space: pre-wrap; background:#f9fcff; border:1px solid #e7eef6; border-radius:8px; padding:0.5rem; }
+    .action-btn { background:#0078d4; color:#fff; border:none; padding:0.35rem 0.75rem; border-radius:6px; cursor:pointer; font-weight:600; }
+    .action-btn:hover { background:#005fa3; }
   </style>
-  <!-- Optional Firebase config (must match form if enabled) -->
-  <script>
-    const ENABLE_FIREBASE = false; // set true after adding config
-    const FIREBASE_CONFIG = {
-      // apiKey: "YOUR_KEY",
-      // authDomain: "YOUR_DOMAIN",
-      // databaseURL: "https://YOUR_DB_URL",
-      // projectId: "YOUR_ID",
-      // storageBucket: "YOUR_BUCKET",
-      // messagingSenderId: "YOUR_SENDER_ID",
-      // appId: "YOUR_APP_ID"
-    };
-  </script>
-  <script type="module">
-    import { initRealtime } from './hs_realtime.js';
-    const fmt = (s) => (s ?? '').toString();
-    let items = [];
-    let currentSession = '';
-
-    function computeKpis(rows) {
-      const count = rows.length;
-      const yes = (k) => rows.filter(r => fmt(r[k]).toLowerCase() === 'yes').length;
-      const room_ra = yes('room_ra_complete');
-      const exits = yes('exits_briefed');
-      const firstAid = yes('first_aid_confirmed');
-      const incident = yes('incident_process_explained');
-      return { count, room_ra, exits, firstAid, incident };
-    }
-
-    function render(rows) {
-      const tbody = document.querySelector('#tbl tbody');
-      tbody.innerHTML = rows.map(r => {
-        const ok = (v) => fmt(v).toLowerCase() === 'yes' ? '<span class="pill ok">Yes</span>' :
-                           fmt(v).toLowerCase() === 'no' ? '<span class="pill bad">No</span>' : '<span class="pill warn">—</span>';
-        return `<tr>
-          <td>${fmt(r.timestamp).replace('T',' ').replace('Z','')}</td>
-          <td>${fmt(r.trainer_name)}</td>
-          <td>${fmt(r.venue)}</td>
-          <td>${ok(r.room_ra_complete)}</td>
-          <td>${ok(r.exits_briefed)}</td>
-          <td>${ok(r.first_aid_confirmed)}</td>
-          <td>${ok(r.incident_process_explained)}</td>
-          <td>${(fmt(r.notes) || '&nbsp;')}</td>
-        </tr>`;
-      }).join('');
-
-      const k = computeKpis(rows);
-      document.getElementById('k_count').textContent = k.count;
-      document.getElementById('k_room').textContent = k.room_ra;
-      document.getElementById('k_exits').textContent = k.exits;
-      document.getElementById('k_first').textContent = k.firstAid;
-      document.getElementById('k_incident').textContent = k.incident;
-    }
-
-    function applyFilters() {
-      const q = (document.getElementById('q')?.value || '').toLowerCase();
-      const filtered = items.filter(r => (!currentSession || r.session_id === currentSession) &&
-        (q === '' || JSON.stringify(r).toLowerCase().includes(q)));
-      render(filtered.sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||'')));
-    }
-
-    async function exportCsv(rows) {
-      const headers = ['timestamp','session_id','venue','trainer_name','room_ra_complete','exits_briefed','first_aid_confirmed','incident_process_explained','notes'];
-      const esc = (v) => `"${(v ?? '').toString().replace(/"/g,'""')}"`;
-      const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => esc(r[h])).join(','))).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement('a'), { href: url, download: `hs_dashboard_${(currentSession||'all').replace(/\W+/g,'_')}.csv` });
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      const realtime = await initRealtime({ ENABLE_FIREBASE, FIREBASE_CONFIG });
-
-      // derive session list from local data first
-      if (realtime.loadAll) {
-        const snap = await realtime.loadAll();
-        items = snap.items || [];
-      }
-
-      // session select
-      const sel = document.getElementById('session');
-      const knownSessions = Array.from(new Set(items.map(i => i.session_id).filter(Boolean))).sort();
-      sel.innerHTML = '<option value="">All sessions</option>' + knownSessions.map(s => `<option>${s}</option>`).join('');
-      // preferred: last used
-      const lastSession = localStorage.getItem('session_id') || '';
-      if (lastSession && knownSessions.includes(lastSession)) {
-        sel.value = lastSession; currentSession = lastSession;
-      }
-
-      sel.addEventListener('change', () => { currentSession = sel.value; applyFilters(); });
-      document.getElementById('q').addEventListener('input', applyFilters);
-      document.getElementById('export').addEventListener('click', () => exportCsv(items.filter(r => !currentSession || r.session_id === currentSession)));
-
-      // live stream
-      realtime.bindSession('', (doc) => {
-        items.push(doc);
-        // keep session dropdown fresh
-        if (doc.session_id && !Array.from(sel.options).some(o => o.value === doc.session_id)) {
-          const opt = document.createElement('option'); opt.value = opt.textContent = doc.session_id; sel.appendChild(opt);
-        }
-        applyFilters();
-      });
-
-      applyFilters();
-    });
-  </script>
 </head>
 <body>
   <div class="visit-card">
-    <h2>Pre‑Session Health &amp; Safety Dashboard</h2>
-    <p class="muted">Live view of all submitted health &amp; safety checks. Works offline with localStorage; turn on Firebase in both files for realtime across devices.</p>
+    <h2>Pre-Session Health &amp; Safety Dashboard</h2>
+    <p class="muted">Live view of all submissions from the “Due Care: Medical &amp; Learning Needs” form. Filter by session, search, export, and click a row to read the full submission.</p>
 
     <div class="controls" style="margin: 0.5rem 0 1rem;">
       <label for="session">Session:</label>
       <select id="session"></select>
-      <input id="q" type="search" placeholder="Search…" />
+      <input id="q" type="search" placeholder="Search name, venue, text…" />
       <button id="export" class="secondary">Export CSV</button>
     </div>
 
     <div class="kpis">
       <div class="card"><div class="muted">Submissions</div><div id="k_count" style="font-size:1.6rem;font-weight:700;">0</div></div>
-      <div class="card"><div class="muted">Room RA: Yes</div><div id="k_room" style="font-size:1.6rem;font-weight:700;">0</div></div>
-      <div class="card"><div class="muted">Exits Briefed: Yes</div><div id="k_exits" style="font-size:1.6rem;font-weight:700;">0</div></div>
-      <div class="card"><div class="muted">First Aid Confirmed: Yes</div><div id="k_first" style="font-size:1.6rem;font-weight:700;">0</div></div>
-      <div class="card"><div class="muted">Incident Process Explained: Yes</div><div id="k_incident" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">Health issues reported</div><div id="k_health" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">Learning requirements reported</div><div id="k_learn" style="font-size:1.6rem;font-weight:700;">0</div></div>
+      <div class="card"><div class="muted">Trainer comments present</div><div id="k_comments" style="font-size:1.6rem;font-weight:700;">0</div></div>
     </div>
 
     <div class="card" style="background:#fff; padding:1rem; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,0.05);">
@@ -158,13 +60,13 @@
           <thead>
             <tr>
               <th>Submitted</th>
+              <th>Learner</th>
               <th>Trainer</th>
               <th>Venue</th>
-              <th>Room RA</th>
-              <th>Exits Briefed</th>
-              <th>First Aid</th>
-              <th>Incident Process</th>
-              <th>Notes</th>
+              <th>Health Issues?</th>
+              <th>Learning Reqs?</th>
+              <th>Comments?</th>
+              <th>View</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -172,5 +74,174 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal -->
+  <div id="backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <header id="m_header">Submission</header>
+      <div class="content">
+        <div class="kv" id="m_kv"></div>
+        <h4 style="margin-top:1rem;">Health issues</h4>
+        <div id="m_health" class="textarea-view"></div>
+        <h4 style="margin-top:1rem;">Learning requirements</h4>
+        <div id="m_learn" class="textarea-view"></div>
+        <h4 style="margin-top:1rem;">Trainer comments</h4>
+        <div id="m_comments" class="textarea-view"></div>
+      </div>
+      <div class="actions">
+        <button id="m_close" class="action-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Local-first store (shared with the form)
+    const STORAGE_KEY = 'hs_submissions';
+    const bc = ('BroadcastChannel' in self) ? new BroadcastChannel('hs_submissions') : null;
+
+    const fmt = (s) => (s ?? '').toString();
+    let items = [];
+    let currentSession = '';
+
+    function getAll() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; } }
+    function hasText(v) { return (fmt(v).trim().length > 0); }
+    function yesNoPill(v) {
+      if (hasText(v)) return '<span class="pill ok">Yes</span>';
+      return '<span class="pill warn">No</span>';
+    }
+
+    function computeKpis(rows) {
+      const count = rows.length;
+      const health = rows.filter(r => hasText(r.health_issues)).length;
+      const learn  = rows.filter(r => hasText(r.learning_requirements)).length;
+      const comments = rows.filter(r => hasText(r.trainer_comments)).length;
+      return { count, health, learn, comments };
+    }
+
+    function render(rows) {
+      const tbody = document.querySelector('#tbl tbody');
+      tbody.innerHTML = rows.map((r, idx) => {
+        const submitted = fmt(r.timestamp).replace('T',' ').replace('Z','');
+        const h = yesNoPill(r.health_issues);
+        const l = yesNoPill(r.learning_requirements);
+        const c = yesNoPill(r.trainer_comments);
+        return `<tr data-idx="${idx}">
+          <td>${submitted}</td>
+          <td>${fmt(r.learner_name)}</td>
+          <td>${fmt(r.trainer_name)}</td>
+          <td>${fmt(r.venue)}</td>
+          <td>${h}</td>
+          <td>${l}</td>
+          <td>${c}</td>
+          <td><button class="action-btn" data-view="${idx}">View</button></td>
+        </tr>`;
+      }).join('');
+
+      // KPIs
+      const k = computeKpis(rows);
+      document.getElementById('k_count').textContent = k.count;
+      document.getElementById('k_health').textContent = k.health;
+      document.getElementById('k_learn').textContent = k.learn;
+      document.getElementById('k_comments').textContent = k.comments;
+
+      // Wire view buttons
+      tbody.querySelectorAll('button[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.getAttribute('data-view'));
+          showDetails(rows[idx]);
+        });
+      });
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('q')?.value || '').toLowerCase();
+      const filtered = items.filter(r => (!currentSession || r.session_id === currentSession) &&
+        (q === '' || JSON.stringify(r).toLowerCase().includes(q)));
+      // newest first
+      filtered.sort((a,b) => (fmt(b.timestamp)).localeCompare(fmt(a.timestamp)));
+      render(filtered);
+    }
+
+    function sessionsFrom(items) {
+      return Array.from(new Set(items.map(i => i.session_id).filter(Boolean))).sort();
+    }
+
+    function exportCsv(rows) {
+      const headers = [
+        'timestamp','session_id','learner_name','trainer_name','course','venue','date',
+        'health_issues','learning_requirements','trainer_comments'
+      ];
+      const esc = (v) => `"${(v ?? '').toString().replace(/"/g,'""')}"`;
+      const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => esc(r[h])).join(','))).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), { href: url, download: `hs_dashboard_${(currentSession||'all').replace(/\W+/g,'_')}.csv` });
+      a.click(); URL.revokeObjectURL(url);
+    }
+
+    // Modal helpers
+    const backdrop = document.getElementById('backdrop');
+    const mHeader = document.getElementById('m_header');
+    const mKV = document.getElementById('m_kv');
+    const mHealth = document.getElementById('m_health');
+    const mLearn = document.getElementById('m_learn');
+    const mComments = document.getElementById('m_comments');
+    document.getElementById('m_close').addEventListener('click', () => { backdrop.style.display = 'none'; backdrop.setAttribute('aria-hidden','true'); });
+
+    function showDetails(r) {
+      mHeader.textContent = `Submission – ${fmt(r.learner_name) || 'Unknown learner'}`;
+      mKV.innerHTML = `
+        <div>Submitted</div><div>${fmt(r.timestamp).replace('T',' ').replace('Z','')}</div>
+        <div>Session</div><div>${fmt(r.session_id)}</div>
+        <div>Trainer</div><div>${fmt(r.trainer_name)}</div>
+        <div>Course</div><div>${fmt(r.course)}</div>
+        <div>Venue</div><div>${fmt(r.venue)}</div>
+        <div>Date</div><div>${fmt(r.date)}</div>
+      `;
+      mHealth.textContent = fmt(r.health_issues);
+      mLearn.textContent = fmt(r.learning_requirements);
+      mComments.textContent = fmt(r.trainer_comments);
+      backdrop.style.display = 'flex';
+      backdrop.setAttribute('aria-hidden','false');
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      // Load current data
+      items = getAll();
+
+      // Session select
+      const sel = document.getElementById('session');
+      const known = sessionsFrom(items);
+      const lastSession = new URLSearchParams(location.search).get('session') || localStorage.getItem('session_id') || '';
+      sel.innerHTML = '<option value="">All sessions</option>' + known.map(s => `<option>${s}</option>`).join('');
+      if (lastSession && known.includes(lastSession)) { sel.value = lastSession; currentSession = lastSession; }
+      sel.addEventListener('change', () => { currentSession = sel.value; applyFilters(); });
+
+      // Search & export
+      document.getElementById('q').addEventListener('input', applyFilters);
+      document.getElementById('export').addEventListener('click', () => {
+        const rows = items.filter(r => !currentSession || r.session_id === currentSession);
+        exportCsv(rows);
+      });
+
+      // Live updates
+      if (bc) {
+        bc.onmessage = (ev) => {
+          if (ev?.data?.type === 'add') {
+            const doc = ev.data.payload;
+            items.push(doc);
+            // keep session dropdown fresh
+            if (doc.session_id && !Array.from(sel.options).some(o => o.value === doc.session_id)) {
+              const opt = document.createElement('option'); opt.value = opt.textContent = doc.session_id; sel.appendChild(opt);
+            }
+            applyFilters();
+          }
+        };
+      }
+      // Apply initial render
+      applyFilters();
+    });
+  </script>
 </body>
 </html>
