@@ -10,14 +10,12 @@
       border: 1px dashed #999;
       background:#fff;
       border-radius: 6px;
-      height: 200px;            /* ⬅️ resized */
+      height: 200px;
       width: 100%;
       touch-action: none;
       display:block;
     }
-    .sig-tools {
-      display:flex; gap:.5rem; align-items:center; margin-top:.5rem; flex-wrap:wrap;
-    }
+    .sig-tools { display:flex; gap:.5rem; align-items:center; margin-top:.5rem; flex-wrap:wrap; }
     .sig-tools button { padding:.4rem .6rem; }
     .muted { color:#666; font-size:.9rem; }
     table { width:100%; border-collapse: collapse; }
@@ -39,7 +37,7 @@
 
     <form id="bls-form">
       <input type="hidden" name="form_type" value="bls">
-      <input type="hidden" id="form_version" name="form_version" value="2025-08-18"><!-- hidden form version -->
+      <input type="hidden" id="form_version" name="form_version" value="2025-08-18">
 
       <!-- Computed/hidden fields -->
       <input type="hidden" name="assessment_outcome_bool" id="assessment_outcome_bool">
@@ -75,7 +73,6 @@
           <label>Hub
             <input name="hub" type="text" required>
           </label>
-          <!-- Learner signature REMOVED -->
         </div>
       </fieldset>
 
@@ -86,9 +83,8 @@
         <table>
           <thead>
             <tr>
-              <th style="width:55%;">Technique</th>
-              <th style="width:15%;">Practiced<br>(Yes/No)</th>
-              <th style="width:30%;">Competent<br>(Yes/No)</th>
+              <th style="width:70%;">Technique</th>
+              <th style="width:30%;">Practiced<br>(Yes/No)</th>
             </tr>
           </thead>
           <tbody>
@@ -96,13 +92,6 @@
               <td>CPR – Adult</td>
               <td>
                 <select name="tech_cpr_adult_practiced" required>
-                  <option value=""></option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_cpr_adult_competent" required>
                   <option value=""></option>
                   <option>Yes</option>
                   <option>No</option>
@@ -118,13 +107,6 @@
                   <option>No</option>
                 </select>
               </td>
-              <td>
-                <select name="tech_recovery_competent" required>
-                  <option value=""></option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </td>
             </tr>
             <tr>
               <td>Choking – Adult</td>
@@ -135,25 +117,11 @@
                   <option>No</option>
                 </select>
               </td>
-              <td>
-                <select name="tech_choking_adult_competent" required>
-                  <option value=""></option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </td>
             </tr>
             <tr>
               <td>Bleeds (bandaging)</td>
               <td>
                 <select name="tech_bleeds_practiced" required>
-                  <option value=""></option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </td>
-              <td>
-                <select name="tech_bleeds_competent" required>
                   <option value=""></option>
                   <option>Yes</option>
                   <option>No</option>
@@ -195,7 +163,7 @@
         </div>
       </fieldset>
 
-      <!-- Assessor Signature (moved to bottom & resized) -->
+      <!-- Assessor Signature -->
       <fieldset>
         <legend>Assessor Signature</legend>
         <div style="display:grid; grid-template-columns: 2fr 1fr; gap:.75rem; align-items:end;">
@@ -226,7 +194,7 @@
   </div>
 
   <script>
-  // Prefill session details from localStorage (if saved on the start page)
+  // Prefill session details from localStorage
   (function () {
     const a = localStorage.getItem('assessor_name') || '';
     const d = localStorage.getItem('training_date') || '';
@@ -241,7 +209,7 @@
     window.location.href = 'home.html';
   });
 
-  // Simple signature pad (resizes with DPR, tracks if user drew)
+  // Simple signature pad
   (function() {
     const canvas = document.getElementById('assessorSig');
     const clearBtn = document.getElementById('clearSig');
@@ -251,7 +219,6 @@
     function resizeCanvas() {
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      const prev = ctx.getImageData ? ctx.getImageData(0, 0, canvas.width, canvas.height) : null;
 
       canvas.width = Math.max(300, Math.floor(rect.width * dpr));
       canvas.height = Math.max(150, Math.floor(rect.height * dpr));
@@ -261,7 +228,6 @@
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#111';
 
-      // Placeholder hint
       ctx.clearRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle = '#999';
       ctx.font = '12px Arial';
@@ -300,9 +266,8 @@
 
     clearBtn.addEventListener('click', () => resizeCanvas());
 
-    // Expose a getter for submission
     canvas.getSignatureBase64 = function() {
-      if (!hasDrawn) return ''; // don't send placeholder
+      if (!hasDrawn) return '';
       const dataUrl = canvas.toDataURL('image/png');
       return (dataUrl.split(',')[1] || '');
     };
@@ -320,11 +285,9 @@
     const submitBtn = e.target.querySelector('button[type="submit"]');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
-    // Compute assessment_outcome_bool
     const chosenOutcome = (new FormData(e.target)).get('outcome') || '';
     document.getElementById('assessment_outcome_bool').value = (chosenOutcome === 'Pass') ? 'true' : 'false';
 
-    // Capture assessor signature -> hidden fields
     const sigCanvas = document.getElementById('assessorSig');
     const base64 = sigCanvas.getSignatureBase64 ? sigCanvas.getSignatureBase64() : '';
     const assessorName = document.getElementById('assessor_name').value || 'assessor';
@@ -333,7 +296,6 @@
     document.getElementById('assessor_signature_base64').value = base64;
     document.getElementById('assessor_signature_filename').value = filename;
 
-    // Build payload
     const fd = new FormData(e.target);
     if (!fd.has('form_type')) fd.append('form_type', 'bls');
     if (!fd.has('form_version')) fd.append('form_version', document.getElementById('form_version').value || '2025-08-18');
