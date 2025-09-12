@@ -5,6 +5,19 @@
   <title>Due Care: Medical & Learning Needs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* minimal helpers in case styles.css lacks these */
+    .sig-box {
+      border: 1px dashed #aaa;
+      background: #fff;
+      width: 100%;
+      height: 180px;       /* visual size; JS handles devicePixelRatio */
+      border-radius: 6px;
+      touch-action: none;  /* important for tablets */
+    }
+    .sig-actions { margin-top: .5rem; display: flex; gap: .5rem; }
+    .sig-actions button { padding: .4rem .8rem; }
+  </style>
 </head>
 <body>
   <div class="visit-card">
@@ -12,6 +25,7 @@
           action="https://routeshealthcare.app.n8n.cloud/webhook/health-and-safety"
           method="post"
           enctype="multipart/form-data">
+
       <!-- ===== Session & Participant Details (TOP) ===== -->
       <fieldset>
         <legend>Session & Participant Details</legend>
@@ -66,86 +80,25 @@
       </fieldset>
 
       <!-- ===== Signatures (BOTTOM) ===== -->
-<script>
-      // Simple signature pad
-  (function() {
-    const canvas = document.getElementById('learnerSig');
-    const clearBtn = document.getElementById('clearSig');
-    const ctx = canvas.getContext('2d');
-    let drawing = false, last = null, hasDrawn = false;
+      <fieldset>
+        <legend>Learner Signature</legend>
 
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
+        <label for="learner_name_confirm">Learner Name (confirm)</label>
+        <input type="text" id="learner_name_confirm" name="learner_name_confirm" />
 
-      canvas.width = Math.max(300, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(150, Math.floor(rect.height * dpr));
-      ctx.setTransform(1,0,0,1,0,0);
-      ctx.scale(dpr, dpr);
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#111';
+        <label for="trainer_name_confirm">Trainer Name (confirm)</label>
+        <input type="text" id="trainer_name_confirm" name="trainer_name_confirm" />
 
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#999';
-      ctx.font = '12px Arial';
-      ctx.fillText('Sign here', 10, 20);
-      hasDrawn = false;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+        <label for="date_bottom">Date (confirm)</label>
+        <input type="date" id="date_bottom" name="date_confirm" />
 
-    function pos(e) {
-      const r = canvas.getBoundingClientRect();
-      const p = e.touches && e.touches[0] ? e.touches[0] : e;
-      return { x: p.clientX - r.left, y: p.clientY - r.top };
-    }
-    function start(e){ drawing = true; last = pos(e); e.preventDefault(); }
-    function move(e){
-      if (!drawing) return;
-      const p = pos(e);
-      ctx.beginPath();
-      ctx.moveTo(last.x, last.y);
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-      last = p;
-      hasDrawn = true;
-      e.preventDefault();
-    }
-    function end(){ drawing = false; last = null; }
-
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', end);
-
-    canvas.addEventListener('touchstart', start, {passive:false});
-    canvas.addEventListener('touchmove', move, {passive:false});
-    canvas.addEventListener('touchend', end);
-
-    clearBtn.addEventListener('click', () => resizeCanvas());
-
-    canvas.getSignatureBase64 = function() {
-      if (!hasDrawn) return '';
-      const dataUrl = canvas.toDataURL('image/png');
-      return (dataUrl.split(',')[1] || '');
-    };
-  })();
-    </script>
-        <!-- Repeated names/dates near signatures -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
-          <div>
-            <label for="learner_name_confirm">Learner Name (confirm)</label>
-            <input type="text" id="learner_name_confirm" name="learner_name_confirm" />
-          </div>
-          <div>
-            <label for="trainer_name_confirm">Trainer Name (confirm)</label>
-            <input type="text" id="trainer_name_confirm" name="trainer_name_confirm" />
-          </div>
-          <div>
-            <label for="date_bottom">Date (confirm)</label>
-            <input type="date" id="date_bottom" name="date_confirm" />
-          </div>
+        <p style="margin-top:1rem;">Please sign in the box:</p>
+        <canvas id="learnerSig" class="sig-box"></canvas>
+        <div class="sig-actions">
+          <button type="button" id="clearSig" aria-label="Clear signature">Clear</button>
         </div>
+        <!-- Hidden field populated on submit -->
+        <input type="hidden" name="learner_signature_b64" id="learner_signature_b64" />
       </fieldset>
 
       <!-- Optional: form metadata helpful in your n8n mapper -->
@@ -181,8 +134,86 @@
       setVal("trainer_name_confirm", assessor);
       setVal("date_bottom", sessionDate);
     });
-      // If you want to require a signature, uncomment:
-      // if (!base64Only) { e.preventDefault(); alert("Please add the trainer's signature."); }
+  </script>
+
+  <script>
+    // ---- Signature pad (tablet-friendly) ----
+    document.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById('learnerSig');
+      const clearBtn = document.getElementById('clearSig');
+      const form = document.getElementById('dueCareForm');
+      const sigHidden = document.getElementById('learner_signature_b64');
+
+      if (!canvas || !clearBtn) return; // fail-safe if markup changes
+
+      const ctx = canvas.getContext('2d');
+      let drawing = false, last = null, hasDrawn = false;
+
+      function resizeCanvas() {
+        // Make the backing store high-DPI while preserving CSS size
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.width = Math.max(300, Math.floor(rect.width * dpr));
+        canvas.height = Math.max(150, Math.floor(rect.height * dpr));
+        ctx.setTransform(1,0,0,1,0,0);
+        ctx.scale(dpr, dpr);
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#111';
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '12px Arial';
+        ctx.fillText('Sign here', 10, 20);
+        hasDrawn = false;
+      }
+      // Initial sizing after layout
+      setTimeout(resizeCanvas, 0);
+      window.addEventListener('resize', resizeCanvas);
+
+      function pos(e) {
+        const r = canvas.getBoundingClientRect();
+        const p = e.touches && e.touches[0] ? e.touches[0] : e;
+        return { x: p.clientX - r.left, y: p.clientY - r.top };
+      }
+      function start(e){ drawing = true; last = pos(e); e.preventDefault(); }
+      function move(e){
+        if (!drawing) return;
+        const p = pos(e);
+        ctx.beginPath();
+        ctx.moveTo(last.x, last.y);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        last = p;
+        hasDrawn = true;
+        e.preventDefault();
+      }
+      function end(){ drawing = false; last = null; }
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', end);
+
+      canvas.addEventListener('touchstart', start, {passive:false});
+      canvas.addEventListener('touchmove', move, {passive:false});
+      canvas.addEventListener('touchend', end);
+
+      clearBtn.addEventListener('click', () => resizeCanvas());
+
+      function getSignatureBase64() {
+        if (!hasDrawn) return '';
+        const dataUrl = canvas.toDataURL('image/png');
+        return (dataUrl.split(',')[1] || '');
+      }
+
+      // Inject signature into hidden field on submit
+      form.addEventListener('submit', (e) => {
+        const b64 = getSignatureBase64();
+        sigHidden.value = b64; // may be empty if not drawn
+        // Uncomment to require a signature:
+        // if (!b64) { e.preventDefault(); alert("Please add the learner's signature."); }
+      });
     });
   </script>
 </body>
