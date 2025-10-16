@@ -208,7 +208,7 @@
       const payload=Object.fromEntries(fd.entries());
 
       try{
-        const res=await fetch('https://routeshealthcare.app.n8n.cloud/webhook-test/moving-handling-submit',{
+        const res=await fetch('https://routeshealthcare.app.n8n.cloud/webhook/moving-handling-submit',{
           method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
         });
         alert(res.ok?'Submitted – thank you!':'There was an issue submitting your form.');
